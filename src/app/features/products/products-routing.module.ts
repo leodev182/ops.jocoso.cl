@@ -5,6 +5,7 @@ import { ProductDetailPageComponent } from './pages/product-detail-page/product-
 
 const routes: Routes = [
   { path: '', component: ProductsListPageComponent },
+  { path: 'new', component: ProductDetailPageComponent },
   { path: ':id', component: ProductDetailPageComponent },
 ];
 
