@@ -1,0 +1,18 @@
+<div class="orders-list-page">
+  <div class="orders-list-page__header">
+    <h2>Órdenes</h2>
+  </div>
+
+  @if (loadError) {
+    <p class="error-msg">{{ loadError }}</p>
+  }
+
+  <div class="orders-list-page__table">
+    @if (orders$ | async; as orders) {
+      <app-orders-table
+        [orders]="orders"
+        (orderClick)="onOrderClick($event)"
+      ></app-orders-table>
+    }
+  </div>
+</div>

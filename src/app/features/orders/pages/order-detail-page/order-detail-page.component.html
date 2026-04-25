@@ -1,0 +1,59 @@
+<div class="order-detail-page">
+  @if (loadError) {
+    <p class="error-msg">{{ loadError }}</p>
+  }
+
+  @if (order) {
+    <div class="order-detail-page__header">
+      <h2>Orden</h2>
+      <code class="order-detail-page__id">{{ order.id }}</code>
+    </div>
+
+    <div class="order-detail-page__meta">
+      <div class="meta-card">
+        <span class="meta-card__label">Estado</span>
+        <span class="badge badge--{{ order.status | lowercase }}">{{ order.status }}</span>
+      </div>
+      <div class="meta-card">
+        <span class="meta-card__label">Total</span>
+        <strong>$ {{ order.totalAmount }}</strong>
+      </div>
+      <div class="meta-card">
+        <span class="meta-card__label">Usuario</span>
+        <code>{{ order.userId }}</code>
+      </div>
+      <div class="meta-card">
+        <span class="meta-card__label">Fecha</span>
+        <span>{{ order.createdAt | date:'medium' }}</span>
+      </div>
+    </div>
+
+    @if (order.items?.length) {
+      <section class="order-detail-page__items">
+        <h3>Ítems</h3>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>Variante ID</th>
+              <th>Cantidad</th>
+              <th>Precio unit.</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of order.items; track item.id) {
+              <tr>
+                <td><code>{{ item.variantId }}</code></td>
+                <td>{{ item.quantity }}</td>
+                <td>$ {{ item.price }}</td>
+                <td>$ {{ subtotal(item.price, item.quantity) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
+  } @else if (!loadError) {
+    <p class="loading-hint">Cargando orden...</p>
+  }
+</div>

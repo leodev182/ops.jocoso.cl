@@ -1,0 +1,18 @@
+.orders-list-page {
+  &__header {
+    margin-bottom: 1.25rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: #1a1a2e;
+    }
+  }
+
+  &__table {
+    background: #fff;
+    border-radius: 8px;
+    padding: 0.25rem 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+}

@@ -1,0 +1,30 @@
+<table class="orders-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Usuario</th>
+      <th>Estado</th>
+      <th>Total</th>
+      <th>Fecha</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (order of orders; track order.id) {
+      <tr>
+        <td><code>{{ order.id | slice:0:8 }}…</code></td>
+        <td><code>{{ order.userId | slice:0:8 }}…</code></td>
+        <td><span class="badge badge--{{ order.status | lowercase }}">{{ order.status }}</span></td>
+        <td>$ {{ order.totalAmount }}</td>
+        <td>{{ order.createdAt | date:'shortDate' }}</td>
+        <td>
+          <button class="btn-link" (click)="orderClick.emit(order)">Ver</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="6" class="orders-table__empty">Sin órdenes.</td>
+      </tr>
+    }
+  </tbody>
+</table>
