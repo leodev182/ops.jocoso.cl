@@ -1,0 +1,17 @@
+<div class="login-page">
+  <div class="login-page__card">
+    <div class="login-page__header">
+      <h1>ops.jocoso.cl</h1>
+      <p>Panel de administración</p>
+    </div>
+
+    @if (errorMessage) {
+      <p class="login-page__error">{{ errorMessage }}</p>
+    }
+
+    <app-login-form
+      [isLoading]="isLoading"
+      (formSubmit)="onLogin($event)"
+    ></app-login-form>
+  </div>
+</div>
