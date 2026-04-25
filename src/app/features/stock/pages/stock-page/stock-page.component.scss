@@ -1,0 +1,96 @@
+.stock-page {
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: #1a1a2e;
+    }
+  }
+
+  &__variant-id {
+    font-size: 0.8rem;
+    background: #e8eaf6;
+    color: #3949ab;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+  }
+
+  &__level-card {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    margin-bottom: 1.25rem;
+    width: fit-content;
+  }
+
+  &__count {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+
+  &__label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__movements {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    margin-top: 1.5rem;
+
+    h3 {
+      margin: 0 0 1rem;
+      font-size: 1rem;
+      color: #333;
+    }
+  }
+}
+
+.adjust-form {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.25rem;
+
+  h3 {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    color: #333;
+  }
+
+  &__row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .form-field {
+      flex: 1;
+      min-width: 140px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+}

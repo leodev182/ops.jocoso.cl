@@ -1,0 +1,64 @@
+<div class="stock-page">
+  <div class="stock-page__header">
+    <h2>Stock</h2>
+    <code class="stock-page__variant-id">{{ variantId }}</code>
+  </div>
+
+  @if (stockLevel) {
+    <div class="stock-page__level-card">
+      <span class="stock-page__count">{{ stockLevel.stock }}</span>
+      <span class="stock-page__label">unidades disponibles</span>
+    </div>
+  }
+
+  @if (successMessage) {
+    <p class="success-msg">{{ successMessage }}</p>
+  }
+  @if (errorMessage) {
+    <p class="error-msg">{{ errorMessage }}</p>
+  }
+
+  <div class="stock-page__actions">
+    <button class="btn-primary" (click)="openAdjustForm('increase')">+ Aumentar</button>
+    <button class="btn-secondary" (click)="openAdjustForm('decrease')">− Disminuir</button>
+  </div>
+
+  @if (showAdjustForm) {
+    <form
+      [formGroup]="adjustForm"
+      (ngSubmit)="onAdjust()"
+      class="adjust-form"
+    >
+      <h3>{{ adjustType === 'increase' ? 'Aumentar' : 'Disminuir' }} stock</h3>
+      <div class="adjust-form__row">
+        <div class="form-field">
+          <label>Cantidad</label>
+          <input formControlName="quantity" type="number" min="1" />
+        </div>
+        <div class="form-field">
+          <label>Tipo referencia</label>
+          <select formControlName="referenceType">
+            <option value="MANUAL">MANUAL</option>
+            <option value="ORDER">ORDER</option>
+            <option value="ML_SALE">ML_SALE</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>ID de referencia</label>
+          <input formControlName="referenceId" placeholder="OC-2026-001" />
+        </div>
+      </div>
+      <div class="adjust-form__actions">
+        <button type="submit" class="btn-primary" [disabled]="adjustForm.invalid || isAdjusting">
+          {{ isAdjusting ? 'Guardando...' : 'Confirmar' }}
+        </button>
+        <button type="button" class="btn-ghost" (click)="showAdjustForm = false">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  <section class="stock-page__movements">
+    <h3>Movimientos de stock</h3>
+    <app-movements-table [movements]="movements"></app-movements-table>
+  </section>
+</div>
