@@ -1,14 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { MercadolibreRoutingModule } from './mercadolibre-routing.module';
-
+import { MlConnectPageComponent } from './pages/ml-connect-page/ml-connect-page.component';
 
 @NgModule({
-  declarations: [],
-  imports: [
-    CommonModule,
-    MercadolibreRoutingModule
-  ]
+  imports: [CommonModule, MercadolibreRoutingModule, MlConnectPageComponent],
 })
-export class MercadolibreModule { }
+export class MercadolibreModule {}
