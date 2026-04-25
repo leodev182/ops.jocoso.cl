@@ -1,0 +1,80 @@
+<div class="product-detail-page">
+  <h2>{{ isNew ? 'Nuevo producto' : (product?.title ?? 'Cargando...') }}</h2>
+
+  @if (errorMessage) {
+    <p class="error-msg">{{ errorMessage }}</p>
+  }
+
+  <section class="product-detail-page__section">
+    <form [formGroup]="productForm" (ngSubmit)="onSaveProduct()" class="product-form">
+      <div class="form-field">
+        <label>Título</label>
+        <input formControlName="title" placeholder="Nombre del producto" />
+      </div>
+      <div class="form-field">
+        <label>Descripción</label>
+        <textarea formControlName="description" rows="3" placeholder="Descripción opcional"></textarea>
+      </div>
+      <button type="submit" class="btn-primary" [disabled]="productForm.invalid || isSaving">
+        {{ isSaving ? 'Guardando...' : (isNew ? 'Crear producto' : 'Guardar cambios') }}
+      </button>
+    </form>
+  </section>
+
+  @if (product && !isNew) {
+    <section class="product-detail-page__section">
+      <div class="section-header">
+        <h3>Variantes</h3>
+        <button class="btn-secondary" (click)="showVariantForm = !showVariantForm">
+          {{ showVariantForm ? 'Cancelar' : '+ Variante' }}
+        </button>
+      </div>
+
+      @if (showVariantForm) {
+        <app-variant-form
+          (variantSubmit)="onAddVariant($event)"
+          (cancel)="showVariantForm = false"
+        ></app-variant-form>
+      }
+
+      @if (product.variants?.length) {
+        <table class="variants-table">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>ML Variation ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (v of product.variants; track v.id) {
+              <tr>
+                <td>{{ v.sku }}</td>
+                <td>$ {{ v.price }}</td>
+                <td>{{ v.stock }}</td>
+                <td>{{ v.mlVariationId ?? '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="empty-hint">Sin variantes aún.</p>
+      }
+    </section>
+
+    <section class="product-detail-page__section">
+      <h3>MercadoLibre</h3>
+      @if (product.mlItemId) {
+        <p>Publicado como <strong>{{ product.mlItemId }}</strong></p>
+      } @else {
+        <button class="btn-secondary" [disabled]="isSyncing" (click)="onSyncToML()">
+          {{ isSyncing ? 'Publicando...' : 'Publicar en MercadoLibre' }}
+        </button>
+      }
+      @if (syncMessage) {
+        <p class="sync-msg">{{ syncMessage }}</p>
+      }
+    </section>
+  }
+</div>

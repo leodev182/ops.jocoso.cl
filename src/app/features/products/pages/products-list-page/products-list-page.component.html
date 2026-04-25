@@ -1,0 +1,31 @@
+<div class="products-list-page">
+  <div class="products-list-page__header">
+    <h2>Productos</h2>
+    <button class="btn-primary" (click)="onCreateProduct()">+ Nuevo producto</button>
+  </div>
+
+  <div class="products-list-page__filters">
+    @for (opt of statusOptions; track opt.label) {
+      <button
+        class="filter-btn"
+        [class.active]="selectedStatus === opt.value"
+        (click)="onStatusChange(opt.value)"
+      >
+        {{ opt.label }}
+      </button>
+    }
+  </div>
+
+  @if (loadError) {
+    <p class="error-msg">{{ loadError }}</p>
+  }
+
+  <div class="products-list-page__table">
+    @if (products$ | async; as products) {
+      <app-product-table
+        [products]="products"
+        (productClick)="onProductClick($event)"
+      ></app-product-table>
+    }
+  </div>
+</div>

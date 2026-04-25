@@ -1,0 +1,28 @@
+<table class="product-table">
+  <thead>
+    <tr>
+      <th>Título</th>
+      <th>Estado</th>
+      <th>ML Item ID</th>
+      <th>Creado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (product of products; track product.id) {
+      <tr>
+        <td>{{ product.title }}</td>
+        <td><span class="badge badge--{{ product.status | lowercase }}">{{ product.status }}</span></td>
+        <td>{{ product.mlItemId ?? '—' }}</td>
+        <td>{{ product.createdAt | date:'shortDate' }}</td>
+        <td>
+          <button class="btn-link" (click)="productClick.emit(product)">Ver</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="5" class="product-table__empty">Sin productos.</td>
+      </tr>
+    }
+  </tbody>
+</table>

@@ -1,0 +1,29 @@
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th {
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  &__empty {
+    text-align: center;
+    color: #999;
+    padding: 2rem !important;
+  }
+}

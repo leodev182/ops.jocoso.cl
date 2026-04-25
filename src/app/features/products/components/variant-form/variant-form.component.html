@@ -1,0 +1,35 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="variant-form">
+  <div class="variant-form__row">
+    <div class="form-field">
+      <label>SKU</label>
+      <input formControlName="sku" placeholder="ZAP-RUN-42-BLK" />
+    </div>
+    <div class="form-field">
+      <label>Precio (CLP)</label>
+      <input formControlName="price" type="number" min="1" placeholder="89990" />
+    </div>
+  </div>
+
+  <div class="form-field">
+    <label>Atributos</label>
+    <div formArrayName="attributes" class="variant-form__attrs">
+      @for (attr of attributes.controls; track $index; let i = $index) {
+        <div [formGroupName]="i" class="variant-form__attr-row">
+          <input formControlName="name" placeholder="talla" />
+          <input formControlName="value" placeholder="42" />
+          @if (attributes.length > 1) {
+            <button type="button" class="btn-icon" (click)="removeAttribute(i)">×</button>
+          }
+        </div>
+      }
+    </div>
+    <button type="button" class="btn-ghost" (click)="addAttribute()">+ Atributo</button>
+  </div>
+
+  <div class="variant-form__actions">
+    <button type="submit" class="btn-primary" [disabled]="form.invalid">
+      Agregar variante
+    </button>
+    <button type="button" class="btn-ghost" (click)="cancel.emit()">Cancelar</button>
+  </div>
+</form>
