@@ -1,0 +1,27 @@
+<div class="dashboard-page">
+  <div class="dashboard-page__header">
+    <h2>Dashboard</h2>
+    <div class="dashboard-page__period">
+      @for (p of periods; track p) {
+        <button
+          class="period-btn"
+          [class.active]="selectedPeriod === p"
+          (click)="onPeriodChange(p)"
+        >
+          {{ p }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (loadError) {
+    <p class="error-msg">{{ loadError }}</p>
+  }
+
+  <section class="dashboard-page__section">
+    <h3>Productos más vistos</h3>
+    @if (trending$ | async; as products) {
+      <app-trending-table [products]="products"></app-trending-table>
+    }
+  </section>
+</div>
