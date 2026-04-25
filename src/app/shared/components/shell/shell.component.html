@@ -1,0 +1,9 @@
+<div class="shell">
+  <app-sidebar-nav
+    [navItems]="navItems"
+    (logoutClick)="onLogout()"
+  ></app-sidebar-nav>
+  <main class="shell__main">
+    <router-outlet></router-outlet>
+  </main>
+</div>
