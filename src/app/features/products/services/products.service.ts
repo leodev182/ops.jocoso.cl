@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../core/http/api.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import {
@@ -20,10 +20,12 @@ export class ProductsService {
     private logger: LoggerService,
   ) {}
 
-  getAll(status?: ProductStatus): Observable<Product[]> {
-    const params = status ? { status } : undefined;
-    this.logger.debug(this.CONTEXT, `Loading products — status: ${status ?? 'ALL'}`);
-    return this.api.get<Product[]>('/products', params);
+  getAll(status?: ProductStatus, search?: string): Observable<Product[]> {
+    const params: Record<string, string> = {};
+    if (status) params['status'] = status;
+    if (search) params['search'] = search;
+    this.logger.debug(this.CONTEXT, `Loading products — status: ${status ?? 'ALL'}, search: ${search ?? ''}`);
+    return this.api.get<{ data: Product[] }>('/products', params).pipe(map(res => res.data));
   }
 
   getById(id: string): Observable<Product> {

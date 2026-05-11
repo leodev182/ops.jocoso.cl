@@ -1,0 +1,44 @@
+<div class="stock-overview">
+  <h2>Stock</h2>
+
+  <input
+    class="stock-overview__search"
+    type="text"
+    placeholder="Buscar producto por nombre..."
+    [(ngModel)]="searchTerm"
+    (ngModelChange)="onSearchChange()"
+  />
+
+  @if (isLoading) {
+    <p class="stock-overview__loading">Buscando...</p>
+  }
+
+  @if (errorMessage) {
+    <p class="error-msg">{{ errorMessage }}</p>
+  }
+
+  @if (searched && products.length === 0 && !isLoading) {
+    <p class="stock-overview__empty">Sin resultados para "{{ searchTerm }}".</p>
+  }
+
+  @for (product of products; track product.id) {
+    <div class="stock-overview__product">
+      <h3 class="stock-overview__product-title">{{ product.title }}</h3>
+
+      @if (!product.variants || product.variants.length === 0) {
+        <p class="stock-overview__no-variants">Sin variantes — abre el producto para crearlas.</p>
+      }
+
+      @for (variant of product.variants ?? []; track variant.id) {
+        <div class="stock-overview__variant" (click)="goToVariantStock(variant.id)">
+          <span class="stock-overview__sku">{{ variant.sku }}</span>
+          <span class="stock-overview__price">$ {{ variant.price }}</span>
+          <span class="stock-overview__stock" [class.stock-overview__stock--low]="variant.stock <= 3">
+            {{ variant.stock }} uds.
+          </span>
+          <span class="stock-overview__link">Gestionar →</span>
+        </div>
+      }
+    </div>
+  }
+</div>
