@@ -20,6 +20,7 @@ export interface Product {
   description: string;
   status: ProductStatus;
   mlItemId: string | null;
+  images: string[];
   createdAt: string;
   updatedAt: string;
   variants?: ProductVariant[];
@@ -29,6 +30,7 @@ export interface TrendingProduct {
   id: string;
   title: string;
   status: ProductStatus;
+  images: string[];
   views: number;
   createdAt: string;
 }
