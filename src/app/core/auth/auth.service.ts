@@ -49,13 +49,11 @@ export class AuthService {
       .toPromise() as Promise<void>;
   }
 
-  login(email: string, password: string): Observable<AuthResponse> {
-    return this.api.post<AuthResponse>('/auth/login', { email, password }).pipe(
-      tap(res => {
-        this.applyTokens(res.accessToken, res.refreshToken);
-        this.currentUserSubject.next(res.user);
-        this.logger.info(this.CONTEXT, `Login OK — role: ${res.user.role}`);
-      }),
+  login(email: string, password: string): Observable<AuthUser> {
+    return this.api.post<AuthRefreshResponse>('/auth/login', { email, password }).pipe(
+      tap(res => this.applyTokens(res.accessToken, res.refreshToken)),
+      map(() => this.currentUserSubject.value!),
+      tap(user => this.logger.info(this.CONTEXT, `Login OK — role: ${user.role}`)),
     );
   }
 

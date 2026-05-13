@@ -18,6 +18,51 @@
     <p class="error-msg">{{ loadError }}</p>
   }
 
+  @if (stats$ | async; as stats) {
+    <section class="dashboard-page__kpis">
+      <div class="kpi-card">
+        <span class="kpi-card__label">Órdenes totales</span>
+        <span class="kpi-card__value">{{ stats.orders.total }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-card__label">Ingresos últimos 30 días</span>
+        <span class="kpi-card__value">{{ stats.orders.revenueLast30Days | currency:'CLP':'symbol':'1.0-0' }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-card__label">Pagos aprobados</span>
+        <span class="kpi-card__value">{{ stats.payments.approved }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-card__label">Productos activos</span>
+        <span class="kpi-card__value">{{ stats.products.active }} / {{ stats.products.total }}</span>
+      </div>
+    </section>
+
+    @if (stats.stock.lowStock.length > 0) {
+      <section class="dashboard-page__section">
+        <h3>⚠ Stock bajo (≤ 5 unidades)</h3>
+        <table class="low-stock-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>SKU</th>
+              <th>Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (v of stats.stock.lowStock; track v.variantId) {
+              <tr>
+                <td>{{ v.productTitle }}</td>
+                <td><code>{{ v.sku }}</code></td>
+                <td class="low-stock-table__qty">{{ v.stock }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
+  }
+
   <section class="dashboard-page__section">
     <h3>Productos más vistos</h3>
     @if (trending$ | async; as products) {

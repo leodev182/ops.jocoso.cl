@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../core/http/api.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { StockLevel, StockMovement, StockAdjustRequest } from '../../../core/models/stock.model';
@@ -19,9 +19,9 @@ export class StockService {
   }
 
   getMovements(variantId: string, limit = 50): Observable<StockMovement[]> {
-    return this.api.get<StockMovement[]>(`/stock/${variantId}/movements`, {
+    return this.api.get<{ data: StockMovement[] }>(`/stock/${variantId}/movements`, {
       limit: String(limit),
-    });
+    }).pipe(map(res => res.data));
   }
 
   increase(body: StockAdjustRequest): Observable<void> {

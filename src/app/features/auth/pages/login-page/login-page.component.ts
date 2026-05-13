@@ -28,9 +28,9 @@ export class LoginPageComponent {
     this.errorMessage = '';
 
     this.authService.login(credentials.email, credentials.password).subscribe({
-      next: res => {
-        if (res.user.role !== 'ADMIN' && res.user.role !== 'SUPPORT') {
-          this.logger.warn(this.CONTEXT, `Blocked login for role: ${res.user.role}`);
+      next: user => {
+        if (user.role !== 'ADMIN' && user.role !== 'SUPPORT') {
+          this.logger.warn(this.CONTEXT, `Blocked login for role: ${user.role}`);
           this.errorMessage = 'Acceso restringido a administradores.';
           this.authService.logout();
           this.isLoading = false;

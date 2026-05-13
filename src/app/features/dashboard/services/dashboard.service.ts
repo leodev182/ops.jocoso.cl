@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/http/api.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { TrendingProduct } from '../../../core/models/product.model';
+import { AdminStats } from '../../../core/models/stats.model';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -19,5 +20,10 @@ export class DashboardService {
       period,
       limit: String(limit),
     });
+  }
+
+  getStats(): Observable<AdminStats> {
+    this.logger.debug(this.CONTEXT, 'Loading admin stats');
+    return this.api.get<AdminStats>('/admin/stats');
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../core/http/api.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { Order } from '../../../core/models/order.model';
@@ -13,10 +13,9 @@ export class OrdersService {
     private logger: LoggerService,
   ) {}
 
-  // Backend needs GET /orders (admin) — currently only GET /orders/my exists for customers
   getAll(): Observable<Order[]> {
     this.logger.debug(this.CONTEXT, 'Loading all orders');
-    return this.api.get<Order[]>('/orders');
+    return this.api.get<{ data: Order[] }>('/orders').pipe(map(res => res.data));
   }
 
   getById(id: string): Observable<Order> {
