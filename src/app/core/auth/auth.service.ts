@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from '../http/api.service';
 import { LoggerService } from '../services/logger.service';
@@ -54,6 +54,19 @@ export class AuthService {
       tap(res => this.applyTokens(res.accessToken, res.refreshToken)),
       map(() => this.currentUserSubject.value!),
       tap(user => this.logger.info(this.CONTEXT, `Login OK — role: ${user.role}`)),
+    );
+  }
+
+  refresh(): Observable<void> {
+    const refreshToken = localStorage.getItem(this.REFRESH_KEY);
+    if (!refreshToken) {
+      this.clearSession();
+      this.router.navigate(['/login']);
+      return throwError(() => new Error('No refresh token'));
+    }
+    return this.api.post<AuthRefreshResponse>('/auth/refresh', { refreshToken }).pipe(
+      tap(res => this.applyTokens(res.accessToken, res.refreshToken)),
+      map(() => undefined as void),
     );
   }
 
