@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { catchError, debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
@@ -13,13 +13,12 @@ import { Product } from '../../../../core/models/product.model';
   templateUrl: './stock-overview-page.component.html',
   styleUrl: './stock-overview-page.component.scss',
 })
-export class StockOverviewPageComponent {
+export class StockOverviewPageComponent implements OnInit {
   private readonly CONTEXT = 'StockOverviewPage';
   private search$ = new Subject<string>();
 
   searchTerm = '';
   products: Product[] = [];
-  searched = false;
   isLoading = false;
   errorMessage = '';
 
@@ -32,28 +31,24 @@ export class StockOverviewPageComponent {
       debounceTime(300),
       distinctUntilChanged(),
       switchMap(term => {
-        if (!term.trim()) {
-          this.products = [];
-          this.searched = false;
-          return of(null);
-        }
         this.isLoading = true;
         this.errorMessage = '';
-        return this.productsService.getAll(undefined, term).pipe(
+        return this.productsService.getAll(undefined, term || undefined).pipe(
           catchError(err => {
             this.logger.error(this.CONTEXT, 'Search failed', err);
             this.errorMessage = 'Error al buscar productos.';
-            return of(null);
+            return of([]);
           }),
         );
       }),
     ).subscribe(res => {
       this.isLoading = false;
-      if (res) {
-        this.products = res;
-        this.searched = true;
-      }
+      this.products = res;
     });
+  }
+
+  ngOnInit(): void {
+    this.loadAll();
   }
 
   onSearchChange(): void {
@@ -62,5 +57,19 @@ export class StockOverviewPageComponent {
 
   goToVariantStock(variantId: string): void {
     this.router.navigate(['/stock', variantId]);
+  }
+
+  private loadAll(): void {
+    this.isLoading = true;
+    this.productsService.getAll().pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Failed to load products', err);
+        this.errorMessage = 'Error al cargar productos.';
+        return of([]);
+      }),
+    ).subscribe(res => {
+      this.isLoading = false;
+      this.products = res;
+    });
   }
 }
