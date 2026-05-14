@@ -65,7 +65,6 @@ export class VariantFormComponent implements OnInit, OnChanges {
     this.form = this.fb.group({
       sku: [{ value: this.editVariant?.sku ?? '', disabled: this.isEditing }, Validators.required],
       price: [this.editVariant ? Number(this.editVariant.price) : null, [Validators.required, Validators.min(1)]],
-      stock: [this.editVariant?.stock ?? 0, [Validators.required, Validators.min(0)]],
       attributes: this.fb.array(attrs),
     });
   }

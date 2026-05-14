@@ -43,7 +43,6 @@ export interface CreateProductRequest {
 export interface CreateVariantRequest {
   sku: string;
   price: number;
-  stock?: number;
   attributes: ProductAttribute[];
 }
 
