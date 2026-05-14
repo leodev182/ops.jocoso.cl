@@ -8,6 +8,12 @@
       <label>Precio (CLP)</label>
       <input formControlName="price" type="number" min="1" placeholder="89990" />
     </div>
+    @if (!isEditing) {
+      <div class="form-field">
+        <label>Stock inicial</label>
+        <input formControlName="stock" type="number" min="0" placeholder="0" />
+      </div>
+    }
   </div>
 
   <div class="form-field">
@@ -28,7 +34,7 @@
 
   <div class="variant-form__actions">
     <button type="submit" class="btn-primary" [disabled]="form.invalid">
-      Agregar variante
+      {{ isEditing ? 'Guardar cambios' : 'Agregar variante' }}
     </button>
     <button type="button" class="btn-ghost" (click)="cancel.emit()">Cancelar</button>
   </div>

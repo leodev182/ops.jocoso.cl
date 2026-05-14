@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, of } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { Product, CreateProductRequest, CreateVariantRequest } from '../../../../core/models/product.model';
+import { Product, CreateProductRequest, CreateVariantRequest, ProductVariant } from '../../../../core/models/product.model';
 import { VariantFormComponent } from '../../components/variant-form/variant-form.component';
 
 @Component({
@@ -20,15 +20,19 @@ export class ProductDetailPageComponent implements OnInit {
   product: Product | null = null;
   isNew = false;
   isSaving = false;
+  isDeleting = false;
   isSyncing = false;
   errorMessage = '';
+  successMessage = '';
   syncMessage = '';
   showVariantForm = false;
+  editingVariant: ProductVariant | null = null;
 
   productForm!: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private productsService: ProductsService,
     private fb: FormBuilder,
     private logger: LoggerService,
@@ -44,21 +48,7 @@ export class ProductDetailPageComponent implements OnInit {
     if (id === 'new') {
       this.isNew = true;
     } else if (id) {
-      this.productsService
-        .getById(id)
-        .pipe(
-          catchError(err => {
-            this.logger.error(this.CONTEXT, `Failed to load product ${id}`, err);
-            this.errorMessage = 'No se pudo cargar el producto.';
-            return of(null);
-          }),
-        )
-        .subscribe(p => {
-          if (p) {
-            this.product = p;
-            this.productForm.patchValue({ title: p.title, description: p.description });
-          }
-        });
+      this.loadProduct(id);
     }
   }
 
@@ -68,46 +58,102 @@ export class ProductDetailPageComponent implements OnInit {
     this.errorMessage = '';
 
     const body: CreateProductRequest = this.productForm.value;
-    this.productsService
-      .create(body)
-      .pipe(
-        catchError(err => {
-          this.logger.error(this.CONTEXT, 'Failed to create product', err);
-          this.errorMessage = 'Error al guardar el producto.';
-          this.isSaving = false;
-          return of(null);
-        }),
-      )
-      .subscribe(p => {
-        if (p) {
-          this.product = p;
-          this.isNew = false;
-          this.isSaving = false;
-        }
-      });
+    this.productsService.create(body).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Failed to create product', err);
+        this.errorMessage = 'Error al guardar el producto.';
+        this.isSaving = false;
+        return of(null);
+      }),
+    ).subscribe(p => {
+      if (p) {
+        this.product = p;
+        this.isNew = false;
+        this.isSaving = false;
+        this.successMessage = 'Producto creado.';
+      }
+    });
   }
 
-  onAddVariant(body: CreateVariantRequest): void {
+  onDeleteProduct(): void {
+    if (!this.product) return;
+    if (!confirm(`¿Eliminar el producto "${this.product.title}"? Esta acción no se puede deshacer.`)) return;
+
+    this.isDeleting = true;
+    this.productsService.delete(this.product.id).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Failed to delete product', err);
+        this.errorMessage = 'Error al eliminar el producto.';
+        this.isDeleting = false;
+        return of(null);
+      }),
+    ).subscribe(() => {
+      this.router.navigate(['/products']);
+    });
+  }
+
+  openAddVariant(): void {
+    this.editingVariant = null;
+    this.showVariantForm = true;
+  }
+
+  openEditVariant(variant: ProductVariant): void {
+    this.editingVariant = variant;
+    this.showVariantForm = true;
+  }
+
+  onVariantSubmit(body: CreateVariantRequest): void {
     if (!this.product) return;
 
-    this.productsService
-      .addVariant(this.product.id, body)
-      .pipe(
+    if (this.editingVariant) {
+      this.productsService.updateVariant(this.product.id, this.editingVariant.id, body).pipe(
+        catchError(err => {
+          this.logger.error(this.CONTEXT, 'Failed to update variant', err);
+          this.errorMessage = 'Error al actualizar la variante.';
+          return of(null);
+        }),
+      ).subscribe(res => {
+        if (res !== null) {
+          this.loadProduct(this.product!.id);
+          this.showVariantForm = false;
+          this.editingVariant = null;
+          this.successMessage = 'Variante actualizada.';
+        }
+      });
+    } else {
+      this.productsService.addVariant(this.product.id, body).pipe(
         catchError(err => {
           this.logger.error(this.CONTEXT, 'Failed to add variant', err);
           this.errorMessage = 'Error al agregar la variante.';
           return of(null);
         }),
-      )
-      .subscribe(variant => {
+      ).subscribe(variant => {
         if (variant) {
-          this.product = {
-            ...this.product!,
-            variants: [...(this.product!.variants ?? []), variant],
-          };
+          this.loadProduct(this.product!.id);
           this.showVariantForm = false;
+          this.successMessage = 'Variante creada.';
         }
       });
+    }
+  }
+
+  onDeleteVariant(variant: ProductVariant): void {
+    if (!this.product) return;
+    if (!confirm(`¿Eliminar la variante "${variant.sku}"?`)) return;
+
+    this.productsService.deleteVariant(this.product.id, variant.id).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Failed to delete variant', err);
+        this.errorMessage = 'Error al eliminar la variante.';
+        return of(null);
+      }),
+    ).subscribe(() => {
+      this.product = {
+        ...this.product!,
+        variants: this.product!.variants?.filter(v => v.id !== variant.id) ?? [],
+      };
+      this.successMessage = 'Variante eliminada.';
+    });
   }
 
   onSyncToML(): void {
@@ -115,27 +161,38 @@ export class ProductDetailPageComponent implements OnInit {
     this.isSyncing = true;
     this.syncMessage = '';
 
-    // Sync with hardcoded defaults; a modal for category/listing-type can be added later
-    this.productsService
-      .syncToML(this.product.id, {
-        mlCategoryId: 'MLC1055',
-        condition: 'new',
-        listingType: 'gold_special',
-      })
-      .pipe(
-        catchError(err => {
-          this.logger.error(this.CONTEXT, 'ML sync failed', err);
-          this.syncMessage = 'Error al sincronizar con MercadoLibre.';
-          this.isSyncing = false;
-          return of(null);
-        }),
-      )
-      .subscribe(res => {
-        if (res) {
-          this.product = { ...this.product!, mlItemId: res.mlItemId };
-          this.syncMessage = `Publicado en ML: ${res.mlItemId}`;
-        }
+    this.productsService.syncToML(this.product.id, {
+      mlCategoryId: 'MLC1055',
+      condition: 'new',
+      listingType: 'gold_special',
+    }).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'ML sync failed', err);
+        this.syncMessage = 'Error al sincronizar con MercadoLibre.';
         this.isSyncing = false;
-      });
+        return of(null);
+      }),
+    ).subscribe(res => {
+      if (res) {
+        this.product = { ...this.product!, mlItemId: res.mlItemId };
+        this.syncMessage = `Publicado en ML: ${res.mlItemId}`;
+      }
+      this.isSyncing = false;
+    });
+  }
+
+  private loadProduct(id: string): void {
+    this.productsService.getById(id).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, `Failed to load product ${id}`, err);
+        this.errorMessage = 'No se pudo cargar el producto.';
+        return of(null);
+      }),
+    ).subscribe(p => {
+      if (p) {
+        this.product = p;
+        this.productForm.patchValue({ title: p.title, description: p.description });
+      }
+    });
   }
 }

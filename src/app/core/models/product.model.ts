@@ -43,7 +43,13 @@ export interface CreateProductRequest {
 export interface CreateVariantRequest {
   sku: string;
   price: number;
+  stock?: number;
   attributes: ProductAttribute[];
+}
+
+export interface UpdateVariantRequest {
+  price?: number;
+  attributes?: ProductAttribute[];
 }
 
 export interface SyncToMLRequest {

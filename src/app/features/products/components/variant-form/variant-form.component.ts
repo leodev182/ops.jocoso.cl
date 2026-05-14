@@ -1,6 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CreateVariantRequest } from '../../../../core/models/product.model';
+import { CreateVariantRequest, ProductVariant } from '../../../../core/models/product.model';
 
 @Component({
   selector: 'app-variant-form',
@@ -9,7 +9,8 @@ import { CreateVariantRequest } from '../../../../core/models/product.model';
   templateUrl: './variant-form.component.html',
   styleUrl: './variant-form.component.scss',
 })
-export class VariantFormComponent implements OnInit {
+export class VariantFormComponent implements OnInit, OnChanges {
+  @Input() editVariant: ProductVariant | null = null;
   @Output() variantSubmit = new EventEmitter<CreateVariantRequest>();
   @Output() cancel = new EventEmitter<void>();
 
@@ -18,21 +19,27 @@ export class VariantFormComponent implements OnInit {
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      sku: ['', Validators.required],
-      price: [null, [Validators.required, Validators.min(1)]],
-      attributes: this.fb.array([this.buildAttributeGroup()]),
-    });
+    this.buildForm();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['editVariant'] && this.form) {
+      this.buildForm();
+    }
   }
 
   get attributes(): FormArray {
     return this.form.get('attributes') as FormArray;
   }
 
-  buildAttributeGroup(): FormGroup {
+  get isEditing(): boolean {
+    return !!this.editVariant;
+  }
+
+  buildAttributeGroup(name = '', value = ''): FormGroup {
     return this.fb.group({
-      name: ['', Validators.required],
-      value: ['', Validators.required],
+      name: [name, Validators.required],
+      value: [value, Validators.required],
     });
   }
 
@@ -41,13 +48,25 @@ export class VariantFormComponent implements OnInit {
   }
 
   removeAttribute(index: number): void {
-    this.attributes.removeAt(index);
+    if (this.attributes.length > 1) this.attributes.removeAt(index);
   }
 
   onSubmit(): void {
     if (this.form.valid) {
       this.variantSubmit.emit(this.form.value as CreateVariantRequest);
-      this.form.reset();
     }
+  }
+
+  private buildForm(): void {
+    const attrs = this.editVariant?.attributes?.length
+      ? this.editVariant.attributes.map(a => this.buildAttributeGroup(a.name, a.value))
+      : [this.buildAttributeGroup()];
+
+    this.form = this.fb.group({
+      sku: [{ value: this.editVariant?.sku ?? '', disabled: this.isEditing }, Validators.required],
+      price: [this.editVariant ? Number(this.editVariant.price) : null, [Validators.required, Validators.min(1)]],
+      stock: [this.editVariant?.stock ?? 0, [Validators.required, Validators.min(0)]],
+      attributes: this.fb.array(attrs),
+    });
   }
 }

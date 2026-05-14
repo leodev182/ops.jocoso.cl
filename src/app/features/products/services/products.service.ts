@@ -8,6 +8,7 @@ import {
   ProductVariant,
   CreateProductRequest,
   CreateVariantRequest,
+  UpdateVariantRequest,
   SyncToMLRequest,
 } from '../../../core/models/product.model';
 
@@ -37,8 +38,20 @@ export class ProductsService {
     return this.api.post<Product>('/products', body);
   }
 
+  delete(productId: string): Observable<void> {
+    return this.api.delete<void>(`/products/${productId}`);
+  }
+
   addVariant(productId: string, body: CreateVariantRequest): Observable<ProductVariant> {
     return this.api.post<ProductVariant>(`/products/${productId}/variants`, body);
+  }
+
+  updateVariant(productId: string, variantId: string, body: UpdateVariantRequest): Observable<void> {
+    return this.api.patch<void>(`/products/${productId}/variants/${variantId}`, body);
+  }
+
+  deleteVariant(productId: string, variantId: string): Observable<void> {
+    return this.api.delete<void>(`/products/${productId}/variants/${variantId}`);
   }
 
   syncToML(productId: string, body: SyncToMLRequest): Observable<{ mlItemId: string }> {
