@@ -5,19 +5,64 @@
   color: #fff;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 0;
   flex-shrink: 0;
+  transition: width 0.2s ease;
+
+  &--collapsed {
+    width: 60px;
+
+    .sidebar__link {
+      padding: 0.7rem 0;
+      justify-content: center;
+
+      &.active {
+        padding-left: 0;
+        border-left: 3px solid #6c63ff;
+      }
+    }
+
+    .sidebar__logout {
+      margin: 1rem 0.5rem 0;
+      padding: 0.6rem;
+      justify-content: center;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1rem 1.2rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    min-height: 56px;
+  }
 
   &__brand {
-    padding: 0 1.5rem 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #7c83a0;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 
-    span {
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: #7c83a0;
-      text-transform: uppercase;
+  &__toggle {
+    background: transparent;
+    border: none;
+    color: #7c83a0;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+
+    &:hover {
+      color: #e0e4f0;
+      background: rgba(255, 255, 255, 0.08);
     }
   }
 
@@ -33,7 +78,9 @@
   }
 
   &__link {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     padding: 0.7rem 1.5rem;
     color: #a0a8c0;
     text-decoration: none;
@@ -54,8 +101,26 @@
     }
   }
 
+  &__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    svg {
+      display: block;
+    }
+  }
+
+  &__label {
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
   &__logout {
-    margin: 1rem 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 1rem 1rem 1.5rem;
     padding: 0.6rem 1rem;
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -65,6 +130,8 @@
     font-size: 0.85rem;
     text-align: left;
     transition: all 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
 
     &:hover {
       background: rgba(220, 50, 50, 0.1);
