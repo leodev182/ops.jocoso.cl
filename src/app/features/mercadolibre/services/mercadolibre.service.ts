@@ -1,17 +1,25 @@
 import { Injectable } from '@angular/core';
+import { ApiService } from '../../../core/http/api.service';
 import { LoggerService } from '../../../core/services/logger.service';
-import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class MercadolibreService {
   private readonly CONTEXT = 'MercadolibreService';
-  private readonly oauthUrl = `${environment.apiUrl}/ml/oauth/authorize`;
 
-  constructor(private logger: LoggerService) {}
+  constructor(
+    private api: ApiService,
+    private logger: LoggerService,
+  ) {}
 
-  // Triggers browser redirect — ML OAuth returns a 302, not handled by HttpClient
   redirectToAuthorize(): void {
-    this.logger.info(this.CONTEXT, 'Redirecting to ML OAuth');
-    window.location.href = this.oauthUrl;
+    this.logger.info(this.CONTEXT, 'Fetching ML OAuth URL');
+    this.api.get<{ url: string }>('/ml/oauth/authorize').subscribe({
+      next: ({ url }) => {
+        window.location.href = url;
+      },
+      error: err => {
+        this.logger.error(this.CONTEXT, 'Failed to get ML OAuth URL', err);
+      },
+    });
   }
 }
