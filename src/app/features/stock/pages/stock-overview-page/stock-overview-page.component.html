@@ -17,8 +17,8 @@
     <p class="error-msg">{{ errorMessage }}</p>
   }
 
-  @if (searched && products.length === 0 && !isLoading) {
-    <p class="stock-overview__empty">Sin resultados para "{{ searchTerm }}".</p>
+  @if (!isLoading && products.length === 0 && !errorMessage) {
+    <p class="stock-overview__empty">Sin productos encontrados.</p>
   }
 
   @for (product of products; track product.id) {
