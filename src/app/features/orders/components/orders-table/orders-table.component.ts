@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DatePipe, SlicePipe } from '@angular/common';
+import { DatePipe, LowerCasePipe, SlicePipe } from '@angular/common';
 import { Order } from '../../../../core/models/order.model';
 
 @Component({
   selector: 'app-orders-table',
   standalone: true,
-  imports: [DatePipe, SlicePipe],
+  imports: [DatePipe, LowerCasePipe, SlicePipe],
   templateUrl: './orders-table.component.html',
   styleUrl: './orders-table.component.scss',
 })

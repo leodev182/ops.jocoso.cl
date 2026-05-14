@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, LowerCasePipe } from '@angular/common';
 import { catchError, of } from 'rxjs';
 import { OrdersService } from '../../services/orders.service';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -9,7 +9,7 @@ import { Order } from '../../../../core/models/order.model';
 @Component({
   selector: 'app-order-detail-page',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, LowerCasePipe],
   templateUrl: './order-detail-page.component.html',
   styleUrl: './order-detail-page.component.scss',
 })
