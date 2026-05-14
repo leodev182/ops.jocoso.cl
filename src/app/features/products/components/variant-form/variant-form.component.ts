@@ -48,7 +48,7 @@ export class VariantFormComponent implements OnInit, OnChanges {
   }
 
   removeAttribute(index: number): void {
-    if (this.attributes.length > 1) this.attributes.removeAt(index);
+    this.attributes.removeAt(index);
   }
 
   onSubmit(): void {
@@ -60,7 +60,7 @@ export class VariantFormComponent implements OnInit, OnChanges {
   private buildForm(): void {
     const attrs = this.editVariant?.attributes?.length
       ? this.editVariant.attributes.map(a => this.buildAttributeGroup(a.name, a.value))
-      : [this.buildAttributeGroup()];
+      : [];
 
     this.form = this.fb.group({
       sku: [{ value: this.editVariant?.sku ?? '', disabled: this.isEditing }, Validators.required],
