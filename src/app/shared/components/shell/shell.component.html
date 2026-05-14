@@ -1,7 +1,9 @@
-<div class="shell">
+<div class="shell" [class.shell--collapsed]="collapsed">
   <app-sidebar-nav
     [navItems]="navItems"
+    [collapsed]="collapsed"
     (logoutClick)="onLogout()"
+    (toggleCollapse)="onToggleCollapse()"
   ></app-sidebar-nav>
   <main class="shell__main">
     <router-outlet></router-outlet>
