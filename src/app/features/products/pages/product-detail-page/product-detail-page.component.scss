@@ -89,6 +89,30 @@
 
 .no-images { color: #ccc; }
 
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 4px;
+  color: #555;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover { background: #f0f0f0; color: #1a1a2e; }
+
+  &--danger {
+    color: #888;
+    &:hover { background: #fef2f2; color: #dc2626; }
+  }
+
+  &--link {
+    color: #2563eb;
+    &:hover { background: #eff6ff; color: #1d4ed8; }
+  }
+}
+
 .ml-images {
   display: flex;
   flex-wrap: wrap;
