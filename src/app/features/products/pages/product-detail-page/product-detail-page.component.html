@@ -131,9 +131,9 @@
 
   @if (linkingVariant && product?.mlItemId) {
     <app-variant-ml-link-modal
-      [mlItemId]="product.mlItemId!"
+      [mlItemId]="product.mlItemId ?? ''"
       [variantSku]="linkingVariant.sku"
-      (confirmed)="onLinkVariantToML(linkingVariant!, $event)"
+      (confirmed)="onLinkVariantToML(linkingVariant, $event)"
       (cancel)="linkingVariant = null"
     ></app-variant-ml-link-modal>
   }
