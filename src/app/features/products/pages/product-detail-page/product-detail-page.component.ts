@@ -163,6 +163,28 @@ export class ProductDetailPageComponent implements OnInit {
     });
   }
 
+  onUnlinkFromML(): void {
+    if (!this.product?.mlItemId) return;
+    if (!confirm(`¿Desvincular este producto de ${this.product.mlItemId}? El stock no se modifica.`)) return;
+
+    this.isSyncing = true;
+    this.syncMessage = '';
+    this.syncError = false;
+
+    this.productsService.unlinkFromML(this.product.id).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'ML unlink failed', err);
+        this.syncMessage = 'Error al desvincular.';
+        this.syncError = true;
+        this.isSyncing = false;
+        return EMPTY;
+      }),
+    ).subscribe(() => {
+      this.loadProduct(this.product!.id);
+      this.isSyncing = false;
+    });
+  }
+
   onMlLinkConfirmed(payload: MlLinkPayload): void {
     if (!this.product) return;
     this.isSyncing = true;

@@ -64,4 +64,9 @@ export class ProductsService {
     this.logger.info(this.CONTEXT, `Linking product ${productId} to ML item ${body.mlItemId}`);
     return this.api.post<void>(`/ml/products/${productId}/link`, body);
   }
+
+  unlinkFromML(productId: string): Observable<void> {
+    this.logger.info(this.CONTEXT, `Unlinking product ${productId} from ML`);
+    return this.api.delete<void>(`/ml/products/${productId}/link`);
+  }
 }

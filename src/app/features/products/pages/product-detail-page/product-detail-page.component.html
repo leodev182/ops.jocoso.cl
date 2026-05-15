@@ -96,7 +96,12 @@
     <section class="product-detail-page__section">
       <h3>MercadoLibre</h3>
       @if (product.mlItemId) {
-        <p>Vinculado como <strong>{{ product.mlItemId }}</strong></p>
+        <div class="section-header">
+          <p style="margin:0">Vinculado como <strong>{{ product.mlItemId }}</strong></p>
+          <button class="btn-link btn-link--danger" [disabled]="isSyncing" (click)="onUnlinkFromML()">
+            Desvincular
+          </button>
+        </div>
         @if (product.images?.length) {
           <div class="ml-images">
             @for (url of product.images; track url) {
