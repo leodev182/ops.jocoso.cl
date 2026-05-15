@@ -1,0 +1,102 @@
+<div class="ml-modal-overlay" (click)="cancel.emit()"></div>
+
+<div class="ml-modal-dialog">
+  <div class="ml-modal-dialog__header">
+    <h3>Vincular con MercadoLibre</h3>
+    <button class="btn-icon" (click)="cancel.emit()">✕</button>
+  </div>
+
+  @if (!selectedItem) {
+    <div class="ml-modal-dialog__search">
+      <div class="search-row">
+        <input
+          [(ngModel)]="searchQuery"
+          placeholder="Buscar publicación por nombre..."
+          (keyup.enter)="onSearch()"
+        />
+        <button
+          class="btn-primary"
+          [disabled]="isSearching || !searchQuery.trim()"
+          (click)="onSearch()"
+        >
+          {{ isSearching ? 'Buscando...' : 'Buscar' }}
+        </button>
+      </div>
+
+      @if (searchError) {
+        <p class="error-msg">{{ searchError }}</p>
+      }
+
+      @if (searchResults.length) {
+        <ul class="search-results">
+          @for (item of searchResults; track item.id) {
+            <li class="search-result" (click)="onSelectItem(item)">
+              <img [src]="item.thumbnail" [alt]="item.title" />
+              <div class="search-result__info">
+                <span class="title">{{ item.title }}</span>
+                <span class="meta">
+                  {{ item.id }} · $ {{ item.price }} · {{ item.available_quantity }} uds
+                  @if (item.variations?.length) {
+                    · {{ item.variations.length }} variaciones
+                  }
+                </span>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else if (searched && !isSearching) {
+        <p class="empty-hint">Sin resultados para "{{ searchQuery }}".</p>
+      }
+    </div>
+  } @else {
+    <div class="ml-modal-dialog__mapping">
+      <div class="selected-item">
+        <img [src]="selectedItem.thumbnail" [alt]="selectedItem.title" />
+        <div class="selected-item__info">
+          <strong>{{ selectedItem.title }}</strong>
+          <span class="ml-id">{{ selectedItem.id }}</span>
+        </div>
+        <button class="btn-link" (click)="selectedItem = null; mappingRows = []; searched = false">
+          Cambiar
+        </button>
+      </div>
+
+      <p class="mapping-hint">
+        Asocia cada variación de ML con la variante correspondiente en ops.
+      </p>
+
+      <table class="mapping-table">
+        <thead>
+          <tr>
+            <th>Variación en ML</th>
+            <th>Stock ML</th>
+            <th>Variante en ops</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of mappingRows; track row.mlVariationId) {
+            <tr>
+              <td>{{ row.mlLabel }}</td>
+              <td>{{ row.mlQuantity }}</td>
+              <td>
+                <select [(ngModel)]="row.localVariantId">
+                  <option value="">— Sin mapear —</option>
+                  @for (v of localVariants; track v.id) {
+                    <option [value]="v.id">{{ v.sku }}</option>
+                  }
+                </select>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="ml-modal-dialog__actions">
+        <button class="btn-secondary" (click)="cancel.emit()">Cancelar</button>
+        <button class="btn-primary" [disabled]="!canConfirm" (click)="onConfirm()">
+          Confirmar vinculación
+        </button>
+      </div>
+    </div>
+  }
+</div>

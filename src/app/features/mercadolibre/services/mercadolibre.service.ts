@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../core/http/api.service';
 import { LoggerService } from '../../../core/services/logger.service';
+import { MlItem } from '../../../core/models/product.model';
 
 @Injectable({ providedIn: 'root' })
 export class MercadolibreService {
@@ -10,6 +12,11 @@ export class MercadolibreService {
     private api: ApiService,
     private logger: LoggerService,
   ) {}
+
+  searchItems(search: string): Observable<MlItem[]> {
+    this.logger.info(this.CONTEXT, `Searching ML items: "${search}"`);
+    return this.api.get<{ items: MlItem[] }>('/ml/items', { search }).pipe(map(res => res.items));
+  }
 
   redirectToAuthorize(): void {
     this.logger.info(this.CONTEXT, 'Fetching ML OAuth URL');

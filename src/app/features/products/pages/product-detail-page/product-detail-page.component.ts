@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { catchError, of } from 'rxjs';
+import { catchError, EMPTY, of } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Product, CreateProductRequest, CreateVariantRequest, ProductVariant } from '../../../../core/models/product.model';
 import { VariantFormComponent } from '../../components/variant-form/variant-form.component';
+import { MlLinkModalComponent, MlLinkPayload } from '../../components/ml-link-modal/ml-link-modal.component';
 
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [ReactiveFormsModule, VariantFormComponent],
+  imports: [ReactiveFormsModule, VariantFormComponent, MlLinkModalComponent],
   templateUrl: './product-detail-page.component.html',
   styleUrl: './product-detail-page.component.scss',
 })
@@ -25,7 +26,9 @@ export class ProductDetailPageComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   syncMessage = '';
+  syncError = false;
   showVariantForm = false;
+  showMlLinkModal = false;
   editingVariant: ProductVariant | null = null;
 
   productForm!: FormGroup;
@@ -153,6 +156,28 @@ export class ProductDetailPageComponent implements OnInit {
         variants: this.product!.variants?.filter(v => v.id !== variant.id) ?? [],
       };
       this.successMessage = 'Variante eliminada.';
+    });
+  }
+
+  onMlLinkConfirmed(payload: MlLinkPayload): void {
+    if (!this.product) return;
+    this.isSyncing = true;
+    this.syncMessage = '';
+    this.syncError = false;
+    this.showMlLinkModal = false;
+
+    this.productsService.linkToML(this.product.id, payload).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'ML link failed', err);
+        this.syncMessage = 'Error al vincular con MercadoLibre.';
+        this.syncError = true;
+        this.isSyncing = false;
+        return EMPTY;
+      }),
+    ).subscribe(() => {
+      this.loadProduct(this.product!.id);
+      this.syncMessage = `Vinculado correctamente con ${payload.mlItemId}`;
+      this.isSyncing = false;
     });
   }
 

@@ -83,13 +83,21 @@
       @if (product.mlItemId) {
         <p>Vinculado como <strong>{{ product.mlItemId }}</strong></p>
       } @else {
-        <button class="btn-secondary" [disabled]="isSyncing" (click)="onSyncToML()">
-          {{ isSyncing ? 'Sincronizando...' : 'Vincular con MercadoLibre' }}
+        <button class="btn-secondary" [disabled]="isSyncing" (click)="showMlLinkModal = true">
+          {{ isSyncing ? 'Vinculando...' : 'Vincular con MercadoLibre' }}
         </button>
       }
       @if (syncMessage) {
-        <p class="sync-msg">{{ syncMessage }}</p>
+        <p [class]="syncError ? 'error-msg' : 'sync-msg'">{{ syncMessage }}</p>
       }
     </section>
+  }
+
+  @if (showMlLinkModal && product) {
+    <app-ml-link-modal
+      [localVariants]="product.variants ?? []"
+      (confirmed)="onMlLinkConfirmed($event)"
+      (cancel)="showMlLinkModal = false"
+    ></app-ml-link-modal>
   }
 </div>

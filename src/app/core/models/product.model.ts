@@ -56,3 +56,29 @@ export interface SyncToMLRequest {
   condition: 'new' | 'used';
   listingType: string;
 }
+
+export interface MlVariation {
+  id: number;
+  price: number;
+  available_quantity: number;
+  attribute_combinations: { id: string; name: string; value_name: string }[];
+}
+
+export interface MlItem {
+  id: string;
+  title: string;
+  price: number;
+  available_quantity: number;
+  thumbnail: string;
+  variations: MlVariation[];
+}
+
+export interface VariantMapping {
+  localVariantId: string;
+  mlVariationId: string | null;
+}
+
+export interface LinkToMLRequest {
+  mlItemId: string;
+  variantMappings: VariantMapping[];
+}

@@ -10,6 +10,7 @@ import {
   CreateVariantRequest,
   UpdateVariantRequest,
   SyncToMLRequest,
+  LinkToMLRequest,
 } from '../../../core/models/product.model';
 
 @Injectable({ providedIn: 'root' })
@@ -57,5 +58,10 @@ export class ProductsService {
   syncToML(productId: string, body: SyncToMLRequest): Observable<{ mlItemId: string }> {
     this.logger.info(this.CONTEXT, `Syncing product ${productId} to ML`);
     return this.api.post<{ mlItemId: string }>(`/ml/products/${productId}/sync`, body);
+  }
+
+  linkToML(productId: string, body: LinkToMLRequest): Observable<void> {
+    this.logger.info(this.CONTEXT, `Linking product ${productId} to ML item ${body.mlItemId}`);
+    return this.api.post<void>(`/ml/products/${productId}/link`, body);
   }
 }
