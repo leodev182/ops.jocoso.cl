@@ -129,13 +129,15 @@
     </section>
   }
 
-  @if (linkingVariant && product?.mlItemId) {
-    <app-variant-ml-link-modal
-      [mlItemId]="product.mlItemId ?? ''"
-      [variantSku]="linkingVariant.sku"
-      (confirmed)="onLinkVariantToML(linkingVariant, $event)"
-      (cancel)="linkingVariant = null"
-    ></app-variant-ml-link-modal>
+  @if (linkingVariant; as lv) {
+    @if (product?.mlItemId; as mlId) {
+      <app-variant-ml-link-modal
+        [mlItemId]="mlId"
+        [variantSku]="lv.sku"
+        (confirmed)="onLinkVariantToML(lv, $event)"
+        (cancel)="linkingVariant = null"
+      ></app-variant-ml-link-modal>
+    }
   }
 
   @if (showMlLinkModal && product) {
