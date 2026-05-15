@@ -26,7 +26,7 @@
       </div>
       <div class="kpi-card">
         <span class="kpi-card__label">Ingresos últimos 30 días</span>
-        <span class="kpi-card__value">{{ stats.orders.revenueLast30Days | currency:'CLP':'symbol':'1.0-0' }}</span>
+        <span class="kpi-card__value">$ {{ stats.orders.revenueLast30Days | number:'1.0-0' }}</span>
       </div>
       <div class="kpi-card">
         <span class="kpi-card__label">Pagos aprobados</span>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AsyncPipe, CurrencyPipe } from '@angular/common';
+import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { Observable } from 'rxjs';
 import { catchError, of } from 'rxjs';
 import { DashboardService } from '../../services/dashboard.service';
@@ -11,7 +11,7 @@ import { TrendingTableComponent } from '../../components/trending-table/trending
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [TrendingTableComponent, AsyncPipe, CurrencyPipe],
+  imports: [TrendingTableComponent, AsyncPipe, DecimalPipe],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss',
 })
