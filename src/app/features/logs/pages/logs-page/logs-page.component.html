@@ -1,0 +1,59 @@
+<div class="logs-page">
+  <div class="logs-page__header">
+    <h2>Logs del Sistema</h2>
+    <button class="btn-secondary" (click)="load()">Actualizar</button>
+  </div>
+
+  <div class="logs-page__filters">
+    <select [(ngModel)]="selectedLevel" (ngModelChange)="load()">
+      @for (opt of levelOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    <input
+      [(ngModel)]="searchTerm"
+      placeholder="Buscar en mensajes..."
+      (keyup.enter)="load()"
+    />
+    <label class="auto-refresh-toggle">
+      <input type="checkbox" [checked]="autoRefresh" (change)="onToggleAutoRefresh()" />
+      Auto-refresh (5s)
+    </label>
+  </div>
+
+  @if (errorMsg) {
+    <p class="error-msg">{{ errorMsg }}</p>
+  }
+
+  @if (isLoading) {
+    <p class="logs-page__loading">Cargando...</p>
+  } @else {
+    <div class="logs-table-wrap">
+      <table class="logs-table">
+        <thead>
+          <tr>
+            <th>Nivel</th>
+            <th>Contexto</th>
+            <th>Mensaje</th>
+            <th>Hace</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (!entries.length) {
+            <tr>
+              <td colspan="4" class="logs-table__empty">Sin logs registrados aún. Los logs aparecen luego del próximo deploy.</td>
+            </tr>
+          }
+          @for (e of entries; track e.time) {
+            <tr [class]="'log-row log-row--' + levelLabel(e.level).toLowerCase()">
+              <td><span class="badge" [class]="levelClass(e.level)">{{ levelLabel(e.level) }}</span></td>
+              <td class="log-context">{{ e.context ?? '—' }}</td>
+              <td class="log-msg">{{ messageFor(e) }}</td>
+              <td class="log-time">{{ timeAgo(e.time) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

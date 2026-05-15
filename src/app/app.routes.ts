@@ -38,6 +38,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/mercadolibre/mercadolibre.module').then(m => m.MercadolibreModule),
       },
+      {
+        path: 'logs',
+        loadChildren: () =>
+          import('./features/logs/logs.module').then(m => m.LogsModule),
+      },
     ],
   },
   { path: '**', redirectTo: '' },
