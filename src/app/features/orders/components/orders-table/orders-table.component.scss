@@ -1,29 +1,62 @@
 .orders-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 
   th {
     text-align: left;
-    padding: 0.6rem 0.75rem;
+    padding: 0.65rem 1rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #555;
-    border-bottom: 2px solid #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
   }
 
   td {
-    padding: 0.65rem 0.75rem;
-    border-bottom: 1px solid #f0f0f0;
-    color: #333;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    color: #374151;
   }
 
-  tr:last-child td {
-    border-bottom: none;
+  &__row {
+    cursor: pointer;
+    transition: background 0.1s;
+    &:hover td { background: #f9fafb; }
+    &:last-child td { border-bottom: none; }
   }
+
+  &__action {
+    color: #d1d5db;
+    text-align: right;
+  }
+
+  &__row:hover &__action { color: #6366f1; }
 
   &__empty {
     text-align: center;
-    color: #999;
-    padding: 2rem !important;
+    color: #9ca3af;
+    padding: 2.5rem !important;
+    font-size: 0.9rem;
   }
+}
+
+.user-id { color: #9ca3af; font-size: 0.8rem; }
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+
+  &--pending   { background: #fef3c7; color: #92400e; }
+  &--confirmed { background: #dbeafe; color: #1e40af; }
+  &--processing{ background: #ede9fe; color: #5b21b6; }
+  &--shipped   { background: #d1fae5; color: #065f46; }
+  &--completed { background: #dcfce7; color: #14532d; }
+  &--cancelled { background: #fee2e2; color: #991b1b; }
 }

@@ -1,18 +1,29 @@
 <div class="orders-list-page">
-  <div class="orders-list-page__header">
-    <h2>Órdenes</h2>
-  </div>
+  <h2>Órdenes</h2>
 
   @if (loadError) {
     <p class="error-msg">{{ loadError }}</p>
   }
 
-  <div class="orders-list-page__table">
-    @if (orders$ | async; as orders) {
-      <app-orders-table
-        [orders]="orders"
-        (orderClick)="onOrderClick($event)"
-      ></app-orders-table>
+  <div class="status-filters">
+    @for (f of filters; track f.value) {
+      <button
+        class="filter-pill"
+        [class.active]="selectedStatus === f.value"
+        (click)="selectedStatus = f.value"
+      >
+        {{ f.label }}
+        @if (countFor(f.value) > 0) {
+          <span class="filter-pill__count">{{ countFor(f.value) }}</span>
+        }
+      </button>
     }
+  </div>
+
+  <div class="orders-list-page__table">
+    <app-orders-table
+      [orders]="filteredOrders"
+      (orderClick)="onOrderClick($event)"
+    ></app-orders-table>
   </div>
 </div>

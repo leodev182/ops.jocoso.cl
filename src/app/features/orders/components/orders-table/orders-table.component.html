@@ -11,19 +11,19 @@
   </thead>
   <tbody>
     @for (order of orders; track order.id) {
-      <tr>
+      <tr class="orders-table__row" (click)="orderClick.emit(order)">
         <td><code>{{ order.id | slice:0:8 }}…</code></td>
-        <td><code>{{ order.userId | slice:0:8 }}…</code></td>
-        <td><span class="badge badge--{{ order.status | lowercase }}">{{ order.status }}</span></td>
+        <td><code class="user-id">{{ order.userId | slice:0:8 }}…</code></td>
+        <td><span class="badge badge--{{ order.status | lowercase }}">{{ order.status | lowercase }}</span></td>
         <td>$ {{ order.totalAmount }}</td>
-        <td>{{ order.createdAt | date:'shortDate' }}</td>
-        <td>
-          <button class="btn-link" (click)="orderClick.emit(order)">Ver</button>
+        <td>{{ order.createdAt | date:'dd/MM/yy' }}</td>
+        <td class="orders-table__action">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </td>
       </tr>
     } @empty {
       <tr>
-        <td colspan="6" class="orders-table__empty">Sin órdenes.</td>
+        <td colspan="6" class="orders-table__empty">No hay órdenes</td>
       </tr>
     }
   </tbody>

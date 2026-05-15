@@ -1,24 +1,38 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
-import { Observable, catchError, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { OrdersService } from '../../services/orders.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { Order } from '../../../../core/models/order.model';
+import { Order, OrderStatus } from '../../../../core/models/order.model';
 import { OrdersTableComponent } from '../../components/orders-table/orders-table.component';
+
+interface StatusFilter {
+  label: string;
+  value: OrderStatus | 'ALL';
+}
 
 @Component({
   selector: 'app-orders-list-page',
   standalone: true,
-  imports: [OrdersTableComponent, AsyncPipe],
+  imports: [OrdersTableComponent],
   templateUrl: './orders-list-page.component.html',
   styleUrl: './orders-list-page.component.scss',
 })
 export class OrdersListPageComponent implements OnInit {
   private readonly CONTEXT = 'OrdersListPage';
 
-  orders$!: Observable<Order[]>;
+  allOrders: Order[] = [];
   loadError = '';
+  selectedStatus: OrderStatus | 'ALL' = 'ALL';
+
+  readonly filters: StatusFilter[] = [
+    { label: 'Todos',              value: 'ALL'       },
+    { label: 'Pendiente de Pago',  value: 'PENDING'   },
+    { label: 'Pago Confirmado',    value: 'CONFIRMED' },
+    { label: 'En Camino',          value: 'SHIPPED'   },
+    { label: 'Entregado',          value: 'COMPLETED' },
+    { label: 'Cancelado',          value: 'CANCELLED' },
+  ];
 
   constructor(
     private ordersService: OrdersService,
@@ -27,13 +41,23 @@ export class OrdersListPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.orders$ = this.ordersService.getAll().pipe(
+    this.ordersService.getAll().pipe(
       catchError(err => {
         this.logger.error(this.CONTEXT, 'Failed to load orders', err);
         this.loadError = 'No se pudieron cargar las órdenes.';
         return of([]);
       }),
-    );
+    ).subscribe(orders => { this.allOrders = orders; });
+  }
+
+  get filteredOrders(): Order[] {
+    if (this.selectedStatus === 'ALL') return this.allOrders;
+    return this.allOrders.filter(o => o.status === this.selectedStatus);
+  }
+
+  countFor(status: OrderStatus | 'ALL'): number {
+    if (status === 'ALL') return this.allOrders.length;
+    return this.allOrders.filter(o => o.status === status).length;
   }
 
   onOrderClick(order: Order): void {

@@ -1,18 +1,60 @@
 .orders-list-page {
-  &__header {
-    margin-bottom: 1.25rem;
-
-    h2 {
-      margin: 0;
-      font-size: 1.4rem;
-      color: #1a1a2e;
-    }
+  h2 {
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+    color: #1a1a2e;
   }
 
   &__table {
     background: #fff;
     border-radius: 8px;
-    padding: 0.25rem 0;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+}
+
+.status-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.875rem;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover { border-color: #1a1a2e; color: #1a1a2e; }
+
+  &.active {
+    background: #1a1a2e;
+    border-color: #1a1a2e;
+    color: #fff;
+    font-weight: 500;
+
+    .filter-pill__count { background: rgba(255,255,255,0.25); color: #fff; }
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #f0f0f0;
+    color: #555;
+    font-size: 0.7rem;
+    font-weight: 600;
   }
 }
