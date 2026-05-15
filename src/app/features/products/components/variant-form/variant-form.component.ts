@@ -11,6 +11,7 @@ import { CreateVariantRequest, ProductVariant } from '../../../../core/models/pr
 })
 export class VariantFormComponent implements OnInit, OnChanges {
   @Input() editVariant: ProductVariant | null = null;
+  @Input() templateAttributes: { name: string; value: string }[] = [];
   @Output() variantSubmit = new EventEmitter<CreateVariantRequest>();
   @Output() cancel = new EventEmitter<void>();
 
@@ -58,9 +59,14 @@ export class VariantFormComponent implements OnInit, OnChanges {
   }
 
   private buildForm(): void {
-    const attrs = this.editVariant?.attributes?.length
-      ? this.editVariant.attributes.map(a => this.buildAttributeGroup(a.name, a.value))
-      : [];
+    let attrs: ReturnType<typeof this.buildAttributeGroup>[];
+    if (this.editVariant?.attributes?.length) {
+      attrs = this.editVariant.attributes.map(a => this.buildAttributeGroup(a.name, a.value));
+    } else if (!this.isEditing && this.templateAttributes.length) {
+      attrs = this.templateAttributes.map(a => this.buildAttributeGroup(a.name, ''));
+    } else {
+      attrs = [];
+    }
 
     this.form = this.fb.group({
       sku: [{ value: this.editVariant?.sku ?? '', disabled: this.isEditing }, Validators.required],
