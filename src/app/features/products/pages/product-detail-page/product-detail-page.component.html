@@ -42,7 +42,7 @@
       @if (showVariantForm) {
         <app-variant-form
           [editVariant]="editingVariant"
-          [templateAttributes]="editingVariant ? [] : variantTemplateAttributes"
+          [copyFrom]="editingVariant ? null : firstVariant"
           (variantSubmit)="onVariantSubmit($event)"
           (cancel)="showVariantForm = false; editingVariant = null"
         ></app-variant-form>

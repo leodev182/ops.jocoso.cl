@@ -100,8 +100,8 @@ export class ProductDetailPageComponent implements OnInit {
     this.showVariantForm = true;
   }
 
-  get variantTemplateAttributes(): { name: string; value: string }[] {
-    return this.product?.variants?.[0]?.attributes ?? [];
+  get firstVariant(): ProductVariant | null {
+    return this.product?.variants?.[0] ?? null;
   }
 
   openEditVariant(variant: ProductVariant): void {

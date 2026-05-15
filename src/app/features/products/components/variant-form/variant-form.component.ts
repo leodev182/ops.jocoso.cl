@@ -11,7 +11,7 @@ import { CreateVariantRequest, ProductVariant } from '../../../../core/models/pr
 })
 export class VariantFormComponent implements OnInit, OnChanges {
   @Input() editVariant: ProductVariant | null = null;
-  @Input() templateAttributes: { name: string; value: string }[] = [];
+  @Input() copyFrom: ProductVariant | null = null;
   @Output() variantSubmit = new EventEmitter<CreateVariantRequest>();
   @Output() cancel = new EventEmitter<void>();
 
@@ -60,17 +60,27 @@ export class VariantFormComponent implements OnInit, OnChanges {
 
   private buildForm(): void {
     let attrs: ReturnType<typeof this.buildAttributeGroup>[];
-    if (this.editVariant?.attributes?.length) {
-      attrs = this.editVariant.attributes.map(a => this.buildAttributeGroup(a.name, a.value));
-    } else if (!this.isEditing && this.templateAttributes.length) {
-      attrs = this.templateAttributes.map(a => this.buildAttributeGroup(a.name, ''));
+    let sku = '';
+    let price: number | null = null;
+
+    if (this.editVariant) {
+      attrs = this.editVariant.attributes?.length
+        ? this.editVariant.attributes.map(a => this.buildAttributeGroup(a.name, a.value))
+        : [];
+      price = Number(this.editVariant.price);
+    } else if (this.copyFrom) {
+      attrs = this.copyFrom.attributes?.length
+        ? this.copyFrom.attributes.map(a => this.buildAttributeGroup(a.name, a.value))
+        : [];
+      sku = this.copyFrom.sku;
+      price = Number(this.copyFrom.price);
     } else {
       attrs = [];
     }
 
     this.form = this.fb.group({
-      sku: [{ value: this.editVariant?.sku ?? '', disabled: this.isEditing }, Validators.required],
-      price: [this.editVariant ? Number(this.editVariant.price) : null, [Validators.required, Validators.min(1)]],
+      sku: [{ value: sku, disabled: this.isEditing }, Validators.required],
+      price: [price, [Validators.required, Validators.min(1)]],
       attributes: this.fb.array(attrs),
     });
   }
