@@ -1,6 +1,13 @@
 .product-detail-page {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
   h2 {
-    margin: 0 0 1.5rem;
+    margin: 0;
     font-size: 1.4rem;
     color: #1a1a2e;
   }
