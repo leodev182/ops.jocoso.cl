@@ -68,6 +68,27 @@
   color: #2e7d32;
 }
 
+.variant-images {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+
+  a { display: block; }
+
+  img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 3px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+
+    &:hover { border-color: #1a1a2e; }
+  }
+}
+
+.no-images { color: #ccc; }
+
 .ml-images {
   display: flex;
   flex-wrap: wrap;

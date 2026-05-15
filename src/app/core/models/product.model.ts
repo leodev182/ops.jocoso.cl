@@ -11,6 +11,7 @@ export interface ProductVariant {
   price: string;
   stock: number;
   mlVariationId: string | null;
+  images: string[];
   attributes: ProductAttribute[];
 }
 
