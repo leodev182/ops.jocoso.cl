@@ -1,0 +1,34 @@
+<div class="ml-modal-overlay" (click)="cancel.emit()"></div>
+
+<div class="ml-modal-dialog">
+  <div class="ml-modal-dialog__header">
+    <h3>Vincular variante a ML</h3>
+    <button class="btn-icon" (click)="cancel.emit()">✕</button>
+  </div>
+
+  <div class="ml-modal-dialog__body">
+    <p class="variant-label">Variante: <strong>{{ variantSku }}</strong></p>
+
+    @if (isLoading) {
+      <p class="hint">Cargando variaciones de ML...</p>
+    } @else if (error) {
+      <p class="error-msg">{{ error }}</p>
+    } @else if (!variations.length) {
+      <p class="hint">Este item no tiene variaciones en ML.</p>
+    } @else {
+      <select [(ngModel)]="selectedVariationId" class="variation-select">
+        <option value="">— Selecciona una variación —</option>
+        @for (v of variations; track v.id) {
+          <option [value]="v.id">{{ variationLabel(v) }} (stock: {{ v.available_quantity }})</option>
+        }
+      </select>
+    }
+  </div>
+
+  <div class="ml-modal-dialog__actions">
+    <button class="btn-secondary" (click)="cancel.emit()">Cancelar</button>
+    <button class="btn-primary" [disabled]="!selectedVariationId || isLoading" (click)="onConfirm()">
+      Vincular
+    </button>
+  </div>
+</div>

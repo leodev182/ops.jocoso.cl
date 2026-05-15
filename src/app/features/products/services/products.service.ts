@@ -65,6 +65,11 @@ export class ProductsService {
     return this.api.post<void>(`/ml/products/${productId}/link`, body);
   }
 
+  linkVariantToML(productId: string, variantId: string, mlVariationId: string): Observable<void> {
+    this.logger.info(this.CONTEXT, `Linking variant ${variantId} to ML variation ${mlVariationId}`);
+    return this.api.post<void>(`/ml/products/${productId}/variants/${variantId}/link`, { mlVariationId });
+  }
+
   unlinkFromML(productId: string): Observable<void> {
     this.logger.info(this.CONTEXT, `Unlinking product ${productId} from ML`);
     return this.api.delete<void>(`/ml/products/${productId}/link`);

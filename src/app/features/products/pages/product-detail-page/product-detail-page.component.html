@@ -66,7 +66,12 @@
                 <td>{{ v.sku }}</td>
                 <td>$ {{ v.price }}</td>
                 <td>{{ v.stock }}</td>
-                <td>{{ v.mlVariationId ?? '—' }}</td>
+                <td>
+                  {{ v.mlVariationId ?? '—' }}
+                  @if (!v.mlVariationId && product.mlItemId) {
+                    <button class="btn-link" (click)="linkingVariant = v">Vincular ML</button>
+                  }
+                </td>
                 <td>
                   @if (v.images?.length) {
                     <div class="variant-images">
@@ -122,6 +127,15 @@
         <p [class]="syncError ? 'error-msg' : 'sync-msg'">{{ syncMessage }}</p>
       }
     </section>
+  }
+
+  @if (linkingVariant && product?.mlItemId) {
+    <app-variant-ml-link-modal
+      [mlItemId]="product.mlItemId!"
+      [variantSku]="linkingVariant.sku"
+      (confirmed)="onLinkVariantToML(linkingVariant!, $event)"
+      (cancel)="linkingVariant = null"
+    ></app-variant-ml-link-modal>
   }
 
   @if (showMlLinkModal && product) {

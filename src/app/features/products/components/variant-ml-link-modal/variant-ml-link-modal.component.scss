@@ -1,0 +1,64 @@
+.ml-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+}
+
+.ml-modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  background: #fff;
+  border-radius: 10px;
+  width: 420px;
+  max-width: calc(100vw - 2rem);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+
+    h3 { margin: 0; font-size: 1rem; color: #1a1a2e; }
+  }
+
+  &__body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #f0f0f0;
+  }
+}
+
+.btn-icon {
+  background: none; border: none; font-size: 1rem;
+  cursor: pointer; color: #666; padding: 0.25rem 0.5rem;
+  &:hover { color: #333; }
+}
+
+.variant-label {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.variation-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #fff;
+}
+
+.hint { color: #888; font-size: 0.875rem; }

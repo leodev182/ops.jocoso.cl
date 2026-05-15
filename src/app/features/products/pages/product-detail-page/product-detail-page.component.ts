@@ -7,11 +7,12 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { Product, CreateProductRequest, CreateVariantRequest, ProductVariant } from '../../../../core/models/product.model';
 import { VariantFormComponent } from '../../components/variant-form/variant-form.component';
 import { MlLinkModalComponent, MlLinkPayload } from '../../components/ml-link-modal/ml-link-modal.component';
+import { VariantMlLinkModalComponent } from '../../components/variant-ml-link-modal/variant-ml-link-modal.component';
 
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [ReactiveFormsModule, VariantFormComponent, MlLinkModalComponent],
+  imports: [ReactiveFormsModule, VariantFormComponent, MlLinkModalComponent, VariantMlLinkModalComponent],
   templateUrl: './product-detail-page.component.html',
   styleUrl: './product-detail-page.component.scss',
 })
@@ -29,6 +30,7 @@ export class ProductDetailPageComponent implements OnInit {
   syncError = false;
   showVariantForm = false;
   showMlLinkModal = false;
+  linkingVariant: ProductVariant | null = null;
   editingVariant: ProductVariant | null = null;
 
   productForm!: FormGroup;
@@ -160,6 +162,22 @@ export class ProductDetailPageComponent implements OnInit {
         variants: this.product!.variants?.filter(v => v.id !== variant.id) ?? [],
       };
       this.successMessage = 'Variante eliminada.';
+    });
+  }
+
+  onLinkVariantToML(variant: ProductVariant, mlVariationId: string): void {
+    if (!this.product) return;
+    this.linkingVariant = null;
+
+    this.productsService.linkVariantToML(this.product.id, variant.id, mlVariationId).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Variant ML link failed', err);
+        this.errorMessage = 'Error al vincular la variante con ML.';
+        return EMPTY;
+      }),
+    ).subscribe(() => {
+      this.loadProduct(this.product!.id);
+      this.successMessage = `Variante ${variant.sku} vinculada a ML.`;
     });
   }
 

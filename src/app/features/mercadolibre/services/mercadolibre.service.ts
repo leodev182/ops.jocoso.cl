@@ -13,6 +13,10 @@ export class MercadolibreService {
     private logger: LoggerService,
   ) {}
 
+  getItemDetail(mlItemId: string): Observable<MlItem> {
+    return this.api.get<MlItem>(`/ml/items/${mlItemId}`);
+  }
+
   searchItems(search: string): Observable<MlItem[]> {
     this.logger.info(this.CONTEXT, `Searching ML items: "${search}"`);
     return this.api.get<{ items: MlItem[] }>('/ml/items', { search }).pipe(map(res => res.items));
