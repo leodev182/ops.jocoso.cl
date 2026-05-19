@@ -3,9 +3,12 @@
   <div class="product-detail-page__header">
     <h2>{{ isNew ? 'Nuevo producto' : (product?.title ?? 'Cargando...') }}</h2>
     @if (!isNew && product) {
-      <button class="btn-danger" [disabled]="isDeleting" (click)="onDeleteProduct()">
-        {{ isDeleting ? 'Eliminando...' : 'Eliminar producto' }}
-      </button>
+      <div class="product-detail-page__header-actions">
+        <button class="btn-secondary" (click)="onCloneProduct()">Clonar</button>
+        <button class="btn-danger" [disabled]="isDeleting" (click)="onDeleteProduct()">
+          {{ isDeleting ? 'Eliminando...' : 'Eliminar producto' }}
+        </button>
+      </div>
     }
   </div>
 

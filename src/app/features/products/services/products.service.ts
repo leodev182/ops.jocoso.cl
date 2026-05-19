@@ -8,6 +8,7 @@ import {
   ProductVariant,
   Paginated,
   CreateProductRequest,
+  UpdateProductRequest,
   CreateVariantRequest,
   UpdateVariantRequest,
   SyncToMLRequest,
@@ -46,6 +47,10 @@ export class ProductsService {
 
   create(body: CreateProductRequest): Observable<Product> {
     return this.api.post<Product>('/products', body);
+  }
+
+  update(productId: string, body: UpdateProductRequest): Observable<void> {
+    return this.api.patch<void>(`/products/${productId}`, body);
   }
 
   delete(productId: string): Observable<void> {

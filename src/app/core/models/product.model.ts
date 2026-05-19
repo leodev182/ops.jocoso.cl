@@ -49,6 +49,12 @@ export interface CreateProductRequest {
   description?: string;
 }
 
+export interface UpdateProductRequest {
+  title?: string;
+  description?: string;
+  status?: ProductStatus;
+}
+
 export interface CreateVariantRequest {
   sku: string;
   price: number;

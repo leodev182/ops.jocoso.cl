@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { catchError, EMPTY, of } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { Product, CreateProductRequest, CreateVariantRequest, ProductVariant } from '../../../../core/models/product.model';
+import { Product, CreateProductRequest, UpdateProductRequest, CreateVariantRequest, ProductVariant } from '../../../../core/models/product.model';
 import { VariantFormComponent } from '../../components/variant-form/variant-form.component';
 import { MlLinkModalComponent, MlLinkPayload } from '../../components/ml-link-modal/ml-link-modal.component';
 import { VariantMlLinkModalComponent } from '../../components/variant-ml-link-modal/variant-ml-link-modal.component';
@@ -61,22 +61,58 @@ export class ProductDetailPageComponent implements OnInit {
     if (this.productForm.invalid) return;
     this.isSaving = true;
     this.errorMessage = '';
+    this.successMessage = '';
 
-    const body: CreateProductRequest = this.productForm.value;
+    if (this.isNew) {
+      const body: CreateProductRequest = this.productForm.value;
+      this.productsService.create(body).pipe(
+        catchError(err => {
+          this.logger.error(this.CONTEXT, 'Failed to create product', err);
+          this.errorMessage = 'Error al crear el producto.';
+          this.isSaving = false;
+          return of(null);
+        }),
+      ).subscribe(p => {
+        if (p) {
+          this.isSaving = false;
+          this.router.navigate(['/products', p.id]);
+        }
+      });
+    } else {
+      const body: UpdateProductRequest = this.productForm.value;
+      this.productsService.update(this.product!.id, body).pipe(
+        catchError(err => {
+          this.logger.error(this.CONTEXT, 'Failed to update product', err);
+          this.errorMessage = 'Error al actualizar el producto.';
+          this.isSaving = false;
+          return of(null);
+        }),
+      ).subscribe(res => {
+        if (res !== null) {
+          this.product = { ...this.product!, ...body };
+          this.isSaving = false;
+          this.successMessage = 'Producto actualizado.';
+        }
+      });
+    }
+  }
+
+  onCloneProduct(): void {
+    if (!this.product) return;
+    if (!confirm(`¿Clonar "${this.product.title}"? Se creará como nuevo producto sin variantes ni vínculo ML.`)) return;
+
+    const body: CreateProductRequest = {
+      title: `${this.product.title} (copia)`,
+      description: this.product.description ?? undefined,
+    };
     this.productsService.create(body).pipe(
       catchError(err => {
-        this.logger.error(this.CONTEXT, 'Failed to create product', err);
-        this.errorMessage = 'Error al guardar el producto.';
-        this.isSaving = false;
+        this.logger.error(this.CONTEXT, 'Failed to clone product', err);
+        this.errorMessage = 'Error al clonar el producto.';
         return of(null);
       }),
     ).subscribe(p => {
-      if (p) {
-        this.product = p;
-        this.isNew = false;
-        this.isSaving = false;
-        this.successMessage = 'Producto creado.';
-      }
+      if (p) this.router.navigate(['/products', p.id]);
     });
   }
 
