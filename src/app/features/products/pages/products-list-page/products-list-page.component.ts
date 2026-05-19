@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
-import { BehaviorSubject, Observable, switchMap, catchError, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Product, ProductStatus } from '../../../../core/models/product.model';
@@ -10,12 +9,13 @@ import { ProductTableComponent } from '../../components/product-table/product-ta
 @Component({
   selector: 'app-products-list-page',
   standalone: true,
-  imports: [ProductTableComponent, AsyncPipe],
+  imports: [ProductTableComponent],
   templateUrl: './products-list-page.component.html',
   styleUrl: './products-list-page.component.scss',
 })
 export class ProductsListPageComponent implements OnInit {
   private readonly CONTEXT = 'ProductsListPage';
+  private readonly PAGE_SIZE = 10;
 
   readonly statusOptions: Array<{ label: string; value: ProductStatus | undefined }> = [
     { label: 'Todos', value: undefined },
@@ -24,10 +24,12 @@ export class ProductsListPageComponent implements OnInit {
     { label: 'PAUSED', value: 'PAUSED' },
   ];
 
-  private statusFilter$ = new BehaviorSubject<ProductStatus | undefined>(undefined);
-  products$!: Observable<Product[]>;
   selectedStatus: ProductStatus | undefined;
+  products: Product[] = [];
+  isLoading = false;
   loadError = '';
+  currentPage = 1;
+  totalPages = 1;
 
   constructor(
     private productsService: ProductsService,
@@ -36,23 +38,18 @@ export class ProductsListPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.products$ = this.statusFilter$.pipe(
-      switchMap(status =>
-        this.productsService.getAll(status).pipe(
-          catchError(err => {
-            this.logger.error(this.CONTEXT, 'Failed to load products', err);
-            this.loadError = 'No se pudieron cargar los productos.';
-            return of([]);
-          }),
-        ),
-      ),
-    );
+    this.load(1);
   }
 
   onStatusChange(status: ProductStatus | undefined): void {
     this.selectedStatus = status;
     this.loadError = '';
-    this.statusFilter$.next(status);
+    this.load(1);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.load(page);
   }
 
   onProductClick(product: Product): void {
@@ -61,5 +58,25 @@ export class ProductsListPageComponent implements OnInit {
 
   onCreateProduct(): void {
     this.router.navigate(['/products/new']);
+  }
+
+  private load(page: number): void {
+    this.isLoading = true;
+    this.productsService
+      .getPaginated(page, this.PAGE_SIZE, this.selectedStatus)
+      .pipe(
+        catchError(err => {
+          this.logger.error(this.CONTEXT, 'Failed to load products', err);
+          this.loadError = 'No se pudieron cargar los productos.';
+          this.isLoading = false;
+          return of({ data: [], total: 0, page: 1, limit: this.PAGE_SIZE, totalPages: 1 });
+        }),
+      )
+      .subscribe(res => {
+        this.products = res.data;
+        this.currentPage = res.page;
+        this.totalPages = res.totalPages;
+        this.isLoading = false;
+      });
   }
 }

@@ -21,11 +21,27 @@
   }
 
   <div class="products-list-page__table">
-    @if (products$ | async; as products) {
-      <app-product-table
-        [products]="products"
-        (productClick)="onProductClick($event)"
-      ></app-product-table>
-    }
+    <app-product-table
+      [products]="products"
+      (productClick)="onProductClick($event)"
+    ></app-product-table>
   </div>
+
+  @if (totalPages > 1) {
+    <div class="products-list-page__pagination">
+      <button
+        class="page-btn"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(currentPage - 1)"
+      >← Anterior</button>
+
+      <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+
+      <button
+        class="page-btn"
+        [disabled]="currentPage === totalPages"
+        (click)="goToPage(currentPage + 1)"
+      >Siguiente →</button>
+    </div>
+  }
 </div>
