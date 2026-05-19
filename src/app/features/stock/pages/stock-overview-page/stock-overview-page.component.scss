@@ -65,6 +65,35 @@
     .stock-overview__variant:hover & { opacity: 1; }
   }
   &__no-variants { font-size: .8125rem; color: #999; padding: .25rem 0; }
+
+  &__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-bottom: .5rem;
+  }
+
+  &__page-btn {
+    padding: .375rem .875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    font-size: .875rem;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+
+    &:hover:not(:disabled) { background: #f5f5f5; border-color: #6366f1; }
+    &:disabled { opacity: 0.4; cursor: default; }
+  }
+
+  &__page-info {
+    font-size: .875rem;
+    color: #555;
+    min-width: 4rem;
+    text-align: center;
+  }
 }
 
 .error-msg { color: #dc2626; font-size: .875rem; }

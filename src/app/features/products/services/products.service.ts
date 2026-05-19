@@ -6,6 +6,7 @@ import {
   Product,
   ProductStatus,
   ProductVariant,
+  Paginated,
   CreateProductRequest,
   CreateVariantRequest,
   UpdateVariantRequest,
@@ -28,6 +29,14 @@ export class ProductsService {
     if (search) params['search'] = search;
     this.logger.debug(this.CONTEXT, `Loading products — status: ${status ?? 'ALL'}, search: ${search ?? ''}`);
     return this.api.get<{ data: Product[] }>('/products', params).pipe(map(res => res.data));
+  }
+
+  getPaginated(page: number, limit: number, status?: ProductStatus, search?: string): Observable<Paginated<Product>> {
+    const params: Record<string, string> = { page: page.toString(), limit: limit.toString() };
+    if (status) params['status'] = status;
+    if (search) params['search'] = search;
+    this.logger.debug(this.CONTEXT, `Loading products page ${page} — status: ${status ?? 'ALL'}, search: ${search ?? ''}`);
+    return this.api.get<Paginated<Product>>('/products', params);
   }
 
   getById(id: string): Observable<Product> {
