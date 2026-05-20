@@ -151,7 +151,9 @@ export class ProductDetailPageComponent implements OnInit {
       ).subscribe(p => {
         if (p) {
           this.isSaving = false;
-          this.router.navigate(['/products', p.id]);
+          this.isNew = false;
+          this.loadProduct(p.id);
+          this.router.navigate(['/products', p.id], { replaceUrl: true });
         }
       });
     } else {
