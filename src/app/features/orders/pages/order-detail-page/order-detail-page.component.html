@@ -53,6 +53,34 @@
         </table>
       </section>
     }
+
+    <section class="order-detail-page__label">
+      <div class="label-header">
+        <h3>Etiqueta Starken</h3>
+        @if (trackingCode) {
+          <span class="tracking-badge">{{ trackingCode }}</span>
+        }
+      </div>
+
+      @if (labelError) {
+        <p class="error-msg">{{ labelError }}</p>
+      }
+
+      <div class="label-actions">
+        <button class="btn-primary" [disabled]="isGeneratingLabel" (click)="onGenerateLabel()">
+          {{ isGeneratingLabel ? 'Generando...' : (zpl ? 'Regenerar etiqueta' : 'Generar etiqueta') }}
+        </button>
+        @if (zpl) {
+          <button class="btn-secondary" (click)="onDownloadZpl()">Descargar .zpl</button>
+        }
+      </div>
+
+      @if (zpl) {
+        <textarea class="label-zpl" readonly rows="12">{{ zpl }}</textarea>
+        <p class="label-hint">Copiar o descargar el .zpl y enviarlo a la impresora Zebra.</p>
+      }
+    </section>
+
   } @else if (!loadError) {
     <p class="loading-hint">Cargando orden...</p>
   }

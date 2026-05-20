@@ -22,4 +22,8 @@ export class OrdersService {
     this.logger.debug(this.CONTEXT, `Loading order ${id}`);
     return this.api.get<Order>(`/orders/${id}`);
   }
+
+  generateShippingLabel(id: string): Observable<{ trackingCode: string; zpl: string }> {
+    return this.api.post<{ trackingCode: string; zpl: string }>(`/orders/${id}/shipping-label`, {});
+  }
 }
