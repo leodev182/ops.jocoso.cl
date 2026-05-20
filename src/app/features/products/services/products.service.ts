@@ -6,6 +6,7 @@ import {
   Product,
   ProductStatus,
   ProductVariant,
+  Tag,
   Paginated,
   CreateProductRequest,
   UpdateProductRequest,
@@ -87,5 +88,25 @@ export class ProductsService {
   unlinkFromML(productId: string): Observable<void> {
     this.logger.info(this.CONTEXT, `Unlinking product ${productId} from ML`);
     return this.api.delete<void>(`/ml/products/${productId}/link`);
+  }
+
+  getTags(): Observable<Tag[]> {
+    return this.api.get<Tag[]>('/tags');
+  }
+
+  createTag(name: string, color?: string): Observable<Tag> {
+    return this.api.post<Tag>('/tags', { name, color });
+  }
+
+  deleteTag(tagId: string): Observable<void> {
+    return this.api.delete<void>(`/tags/${tagId}`);
+  }
+
+  addTag(productId: string, tagId: string): Observable<void> {
+    return this.api.post<void>(`/products/${productId}/tags/${tagId}`, {});
+  }
+
+  removeTag(productId: string, tagId: string): Observable<void> {
+    return this.api.delete<void>(`/products/${productId}/tags/${tagId}`);
   }
 }

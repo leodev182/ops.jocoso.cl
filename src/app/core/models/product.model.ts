@@ -1,5 +1,12 @@
 export type ProductStatus = 'ACTIVE' | 'INACTIVE' | 'PAUSED';
 
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+  color: string | null;
+}
+
 export interface Paginated<T> {
   data: T[];
   total: number;
@@ -26,13 +33,17 @@ export interface ProductVariant {
 export interface Product {
   id: string;
   title: string;
+  slug: string | null;
   description: string;
+  brand: string | null;
   status: ProductStatus;
+  featured: boolean;
   mlItemId: string | null;
   images: string[];
   createdAt: string;
   updatedAt: string;
   variants?: ProductVariant[];
+  tags?: Tag[];
 }
 
 export interface TrendingProduct {
@@ -51,8 +62,11 @@ export interface CreateProductRequest {
 
 export interface UpdateProductRequest {
   title?: string;
+  slug?: string;
   description?: string;
+  brand?: string;
   status?: ProductStatus;
+  featured?: boolean;
 }
 
 export interface CreateVariantRequest {
