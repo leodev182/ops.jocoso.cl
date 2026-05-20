@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { catchError, EMPTY, finalize, of, tap } from 'rxjs';
@@ -17,7 +17,7 @@ function toSlug(text: string): string {
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, VariantFormComponent, MlLinkModalComponent, VariantMlLinkModalComponent],
+  imports: [ReactiveFormsModule, FormsModule, RouterLink, VariantFormComponent, MlLinkModalComponent, VariantMlLinkModalComponent],
   templateUrl: './product-detail-page.component.html',
   styleUrl: './product-detail-page.component.scss',
 })

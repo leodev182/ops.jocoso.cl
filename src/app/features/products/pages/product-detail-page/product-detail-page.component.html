@@ -75,6 +75,8 @@
           </select>
           <button class="btn-secondary" [disabled]="!selectedTagId" (click)="onAddTag()">Agregar</button>
         </div>
+      } @else if (!allTags.length) {
+        <p class="tags-empty">No hay tags creados. <a routerLink="/tags">Crear tags →</a></p>
       }
     </section>
 
