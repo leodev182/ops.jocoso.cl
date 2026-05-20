@@ -120,7 +120,7 @@
                   }
                 </td>
                 <td>
-                  @if (v.images?.length) {
+                  @if (v.images.length) {
                     <div class="variant-images">
                       @for (url of v.images; track url) {
                         <a [href]="url" target="_blank" rel="noopener">
@@ -158,7 +158,7 @@
             Desvincular
           </button>
         </div>
-        @if (product.images?.length) {
+        @if (product.images.length) {
           <div class="ml-images">
             @for (url of product.images; track url) {
               <a [href]="url" target="_blank" rel="noopener">
