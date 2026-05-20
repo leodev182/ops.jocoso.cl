@@ -1,23 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { catchError, EMPTY, of } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { Product, CreateProductRequest, UpdateProductRequest, CreateVariantRequest, ProductVariant } from '../../../../core/models/product.model';
+import { Product, Tag, CreateProductRequest, UpdateProductRequest, CreateVariantRequest, ProductVariant } from '../../../../core/models/product.model';
 import { VariantFormComponent } from '../../components/variant-form/variant-form.component';
 import { MlLinkModalComponent, MlLinkPayload } from '../../components/ml-link-modal/ml-link-modal.component';
 import { VariantMlLinkModalComponent } from '../../components/variant-ml-link-modal/variant-ml-link-modal.component';
 
+function toSlug(text: string): string {
+  return text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [ReactiveFormsModule, VariantFormComponent, MlLinkModalComponent, VariantMlLinkModalComponent],
+  imports: [ReactiveFormsModule, FormsModule, VariantFormComponent, MlLinkModalComponent, VariantMlLinkModalComponent],
   templateUrl: './product-detail-page.component.html',
   styleUrl: './product-detail-page.component.scss',
 })
 export class ProductDetailPageComponent implements OnInit {
   private readonly CONTEXT = 'ProductDetailPage';
+  private slugManuallyEdited = false;
 
   product: Product | null = null;
   isNew = false;
@@ -33,6 +39,9 @@ export class ProductDetailPageComponent implements OnInit {
   linkingVariant: ProductVariant | null = null;
   editingVariant: ProductVariant | null = null;
 
+  allTags: Tag[] = [];
+  selectedTagId = '';
+
   productForm!: FormGroup;
 
   constructor(
@@ -46,8 +55,15 @@ export class ProductDetailPageComponent implements OnInit {
   ngOnInit(): void {
     this.productForm = this.fb.group({
       title: ['', Validators.required],
+      slug: [''],
       description: [''],
+      brand: [''],
+      featured: [false],
     });
+
+    this.productsService.getTags().pipe(
+      catchError(() => of([])),
+    ).subscribe(tags => this.allTags = tags);
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id === 'new') {
@@ -57,6 +73,52 @@ export class ProductDetailPageComponent implements OnInit {
     }
   }
 
+  onTitleChange(): void {
+    if (!this.slugManuallyEdited) {
+      const title = this.productForm.get('title')?.value ?? '';
+      this.productForm.patchValue({ slug: toSlug(title) }, { emitEvent: false });
+    }
+  }
+
+  onSlugChange(): void {
+    this.slugManuallyEdited = true;
+  }
+
+  get availableTags(): Tag[] {
+    const current = new Set((this.product?.tags ?? []).map(t => t.id));
+    return this.allTags.filter(t => !current.has(t.id));
+  }
+
+  onAddTag(): void {
+    if (!this.selectedTagId || !this.product) return;
+    this.productsService.addTag(this.product.id, this.selectedTagId).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Failed to add tag', err);
+        this.errorMessage = 'Error al agregar el tag.';
+        return EMPTY;
+      }),
+    ).subscribe(() => {
+      const tag = this.allTags.find(t => t.id === this.selectedTagId);
+      if (tag) {
+        this.product = { ...this.product!, tags: [...(this.product!.tags ?? []), tag] };
+      }
+      this.selectedTagId = '';
+    });
+  }
+
+  onRemoveTag(tag: Tag): void {
+    if (!this.product) return;
+    this.productsService.removeTag(this.product.id, tag.id).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Failed to remove tag', err);
+        this.errorMessage = 'Error al quitar el tag.';
+        return EMPTY;
+      }),
+    ).subscribe(() => {
+      this.product = { ...this.product!, tags: this.product!.tags?.filter(t => t.id !== tag.id) ?? [] };
+    });
+  }
+
   onSaveProduct(): void {
     if (this.productForm.invalid) return;
     this.isSaving = true;
@@ -64,7 +126,10 @@ export class ProductDetailPageComponent implements OnInit {
     this.successMessage = '';
 
     if (this.isNew) {
-      const body: CreateProductRequest = this.productForm.value;
+      const body: CreateProductRequest = {
+        title: this.productForm.value.title,
+        description: this.productForm.value.description,
+      };
       this.productsService.create(body).pipe(
         catchError(err => {
           this.logger.error(this.CONTEXT, 'Failed to create product', err);
@@ -79,7 +144,13 @@ export class ProductDetailPageComponent implements OnInit {
         }
       });
     } else {
-      const body: UpdateProductRequest = this.productForm.value;
+      const body: UpdateProductRequest = {
+        title: this.productForm.value.title,
+        slug: this.productForm.value.slug || undefined,
+        description: this.productForm.value.description,
+        brand: this.productForm.value.brand || undefined,
+        featured: this.productForm.value.featured,
+      };
       this.productsService.update(this.product!.id, body).pipe(
         catchError(err => {
           this.logger.error(this.CONTEXT, 'Failed to update product', err);
@@ -296,7 +367,14 @@ export class ProductDetailPageComponent implements OnInit {
     ).subscribe(p => {
       if (p) {
         this.product = p;
-        this.productForm.patchValue({ title: p.title, description: p.description });
+        this.slugManuallyEdited = !!p.slug;
+        this.productForm.patchValue({
+          title: p.title,
+          slug: p.slug ?? '',
+          description: p.description,
+          brand: p.brand ?? '',
+          featured: p.featured ?? false,
+        });
       }
     });
   }

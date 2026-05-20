@@ -23,11 +23,27 @@
     <form [formGroup]="productForm" (ngSubmit)="onSaveProduct()" class="product-form">
       <div class="form-field">
         <label>Título</label>
-        <input formControlName="title" placeholder="Nombre del producto" />
+        <input formControlName="title" placeholder="Nombre del producto" (input)="onTitleChange()" />
       </div>
+      <div class="form-field">
+        <label>Marca</label>
+        <input formControlName="brand" placeholder="Ej: Meetion, Darkflash, Aigo..." />
+      </div>
+      @if (!isNew) {
+        <div class="form-field">
+          <label>Slug <span class="form-field__hint">— URL en la tienda</span></label>
+          <input formControlName="slug" placeholder="ej: teclado-gamer-k300" (input)="onSlugChange()" />
+        </div>
+      }
       <div class="form-field">
         <label>Descripción</label>
         <textarea formControlName="description" rows="3" placeholder="Descripción opcional"></textarea>
+      </div>
+      <div class="form-field form-field--inline">
+        <label>
+          <input type="checkbox" formControlName="featured" />
+          Destacado en la tienda
+        </label>
       </div>
       <button type="submit" class="btn-primary" [disabled]="productForm.invalid || isSaving">
         {{ isSaving ? 'Guardando...' : (isNew ? 'Crear producto' : 'Guardar cambios') }}
@@ -36,6 +52,32 @@
   </section>
 
   @if (product && !isNew) {
+    <section class="product-detail-page__section">
+      <h3>Tags</h3>
+      <div class="tags-list">
+        @for (tag of product.tags ?? []; track tag.id) {
+          <span class="tag-chip" [style.background]="tag.color ?? '#e0e7ff'">
+            {{ tag.name }}
+            <button class="tag-chip__remove" (click)="onRemoveTag(tag)">×</button>
+          </span>
+        }
+        @if (!(product.tags?.length)) {
+          <span class="tags-empty">Sin tags</span>
+        }
+      </div>
+      @if (availableTags.length) {
+        <div class="tags-add">
+          <select [(ngModel)]="selectedTagId" class="tags-select">
+            <option value="">Seleccionar tag...</option>
+            @for (tag of availableTags; track tag.id) {
+              <option [value]="tag.id">{{ tag.name }}</option>
+            }
+          </select>
+          <button class="btn-secondary" [disabled]="!selectedTagId" (click)="onAddTag()">Agregar</button>
+        </div>
+      }
+    </section>
+
     <section class="product-detail-page__section">
       <div class="section-header">
         <h3>Variantes ({{ product.variants?.length ?? 0 }})</h3>
