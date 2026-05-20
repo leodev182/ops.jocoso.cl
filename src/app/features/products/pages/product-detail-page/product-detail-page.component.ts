@@ -156,14 +156,12 @@ export class ProductDetailPageComponent implements OnInit {
           this.logger.error(this.CONTEXT, 'Failed to update product', err);
           this.errorMessage = 'Error al actualizar el producto.';
           this.isSaving = false;
-          return of(null);
+          return EMPTY;
         }),
-      ).subscribe(res => {
-        if (res !== null) {
-          this.product = { ...this.product!, ...body };
-          this.isSaving = false;
-          this.successMessage = 'Producto actualizado.';
-        }
+      ).subscribe(() => {
+        this.product = { ...this.product!, ...body };
+        this.isSaving = false;
+        this.successMessage = 'Producto actualizado.';
       });
     }
   }
