@@ -89,6 +89,17 @@ export class ProductDetailPageComponent implements OnInit {
     return this.allTags.filter(t => !current.has(t.id));
   }
 
+  tagTextColor(hexColor: string | null): string {
+    if (!hexColor) return '#1a1a2e';
+    const hex = hexColor.replace('#', '');
+    if (hex.length !== 6) return '#1a1a2e';
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? '#1a1a2e' : '#ffffff';
+  }
+
   onAddTag(): void {
     if (!this.selectedTagId || !this.product) return;
     this.productsService.addTag(this.product.id, this.selectedTagId).pipe(

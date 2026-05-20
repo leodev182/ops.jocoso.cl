@@ -56,7 +56,7 @@
       <h3>Tags</h3>
       <div class="tags-list">
         @for (tag of product.tags ?? []; track tag.id) {
-          <span class="tag-chip" [style.background]="tag.color ?? '#e0e7ff'">
+          <span class="tag-chip" [style.background]="tag.color ?? '#e0e7ff'" [style.color]="tagTextColor(tag.color)">
             {{ tag.name }}
             <button class="tag-chip__remove" (click)="onRemoveTag(tag)">×</button>
           </span>

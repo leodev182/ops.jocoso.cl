@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { catchError, of } from 'rxjs';
+import { catchError, EMPTY, finalize, of, tap } from 'rxjs';
 import { ProductsService } from '../../../products/services/products.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Tag } from '../../../../core/models/product.model';
@@ -59,16 +59,24 @@ export class TagsPageComponent implements OnInit {
     if (!confirm(`¿Eliminar el tag "${tag.name}"? Se quitará de todos los productos.`)) return;
 
     this.productsService.deleteTag(tag.id).pipe(
+      tap(() => this.tags = this.tags.filter(t => t.id !== tag.id)),
       catchError(err => {
         this.logger.error(this.CONTEXT, 'Failed to delete tag', err);
         this.errorMessage = 'Error al eliminar el tag.';
-        return of(null);
+        return EMPTY;
       }),
-    ).subscribe(res => {
-      if (res !== null) {
-        this.tags = this.tags.filter(t => t.id !== tag.id);
-      }
-    });
+    ).subscribe();
+  }
+
+  tagTextColor(hexColor: string | null): string {
+    if (!hexColor) return '#1a1a2e';
+    const hex = hexColor.replace('#', '');
+    if (hex.length !== 6) return '#1a1a2e';
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? '#1a1a2e' : '#ffffff';
   }
 
   private loadTags(): void {
