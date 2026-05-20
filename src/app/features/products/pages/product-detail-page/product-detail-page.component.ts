@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-import { catchError, EMPTY, of } from 'rxjs';
+import { catchError, EMPTY, finalize, tap } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Product, Tag, CreateProductRequest, UpdateProductRequest, CreateVariantRequest, ProductVariant } from '../../../../core/models/product.model';
@@ -152,17 +152,18 @@ export class ProductDetailPageComponent implements OnInit {
         featured: this.productForm.value.featured,
       };
       this.productsService.update(this.product!.id, body).pipe(
+        tap(() => {
+          this.product = { ...this.product!, ...body };
+          this.successMessage = 'Producto actualizado.';
+          setTimeout(() => this.successMessage = '', 3000);
+        }),
         catchError(err => {
           this.logger.error(this.CONTEXT, 'Failed to update product', err);
           this.errorMessage = 'Error al actualizar el producto.';
-          this.isSaving = false;
           return EMPTY;
         }),
-      ).subscribe(() => {
-        this.product = { ...this.product!, ...body };
-        this.isSaving = false;
-        this.successMessage = 'Producto actualizado.';
-      });
+        finalize(() => this.isSaving = false),
+      ).subscribe();
     }
   }
 
