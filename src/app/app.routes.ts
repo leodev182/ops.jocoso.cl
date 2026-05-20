@@ -43,6 +43,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/logs/logs.module').then(m => m.LogsModule),
       },
+      {
+        path: 'tags',
+        loadChildren: () =>
+          import('./features/tags/tags.module').then(m => m.TagsModule),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

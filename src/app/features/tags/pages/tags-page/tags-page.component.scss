@@ -1,0 +1,92 @@
+.tags-page {
+  padding: 2rem;
+  max-width: 600px;
+
+  h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.25rem; }
+
+  &__form {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 180px;
+    padding: .5rem .75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: .875rem;
+
+    &:focus { outline: none; border-color: #6366f1; }
+  }
+
+  &__color-wrap {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+  }
+
+  &__color-label { font-size: .8125rem; color: #555; }
+
+  &__color {
+    width: 36px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  &__loading, &__empty { color: #999; font-size: .875rem; }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    margin-top: 1.25rem;
+  }
+}
+
+.tag-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .5rem .75rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+.tag-chip {
+  padding: .2rem .7rem;
+  border-radius: 999px;
+  font-size: .8125rem;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+.tag-slug {
+  flex: 1;
+  font-size: .8125rem;
+  color: #888;
+  font-family: monospace;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: .3rem;
+  border-radius: 4px;
+  color: #888;
+  display: inline-flex;
+  align-items: center;
+  transition: background .15s, color .15s;
+
+  &--danger:hover { background: #fef2f2; color: #dc2626; }
+}
+
+.error-msg { color: #dc2626; font-size: .875rem; margin-bottom: .5rem; }
