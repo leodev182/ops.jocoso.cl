@@ -48,6 +48,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/tags/tags.module').then(m => m.TagsModule),
       },
+      {
+        path: 'envios',
+        loadChildren: () =>
+          import('./features/shipments/shipments.module').then(m => m.ShipmentsModule),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

@@ -1,0 +1,109 @@
+<div class="envios">
+  <h2>Envíos manuales</h2>
+  <p class="envios__desc">Genera una etiqueta ZPL para despacho Starken sin pasar por la tienda web.</p>
+
+  <form class="envios__form" (ngSubmit)="onSubmit()" #f="ngForm">
+
+    <fieldset class="envios__section">
+      <legend>Despacho Starken</legend>
+      <div class="form-field">
+        <label>Número de seguimiento *</label>
+        <input type="text" [(ngModel)]="form.trackingCode" name="trackingCode" required placeholder="ST123456789CL" />
+      </div>
+    </fieldset>
+
+    <fieldset class="envios__section">
+      <legend>Destinatario</legend>
+      <div class="envios__row">
+        <div class="form-field">
+          <label>Nombre completo *</label>
+          <input type="text" [(ngModel)]="form.fullName" name="fullName" required />
+        </div>
+        <div class="form-field">
+          <label>RUT *</label>
+          <input type="text" [(ngModel)]="form.rut" name="rut" required placeholder="12.345.678-9" />
+        </div>
+      </div>
+      <div class="envios__row">
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="form.email" name="email" placeholder="opcional" />
+        </div>
+        <div class="form-field">
+          <label>Teléfono *</label>
+          <input type="text" [(ngModel)]="form.phone" name="phone" required placeholder="+56912345678" />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="envios__section">
+      <legend>Dirección</legend>
+      <div class="envios__row envios__row--3">
+        <div class="form-field">
+          <label>Región *</label>
+          <input type="text" [(ngModel)]="form.region" name="region" required />
+        </div>
+        <div class="form-field">
+          <label>Ciudad *</label>
+          <input type="text" [(ngModel)]="form.ciudad" name="ciudad" required />
+        </div>
+        <div class="form-field">
+          <label>Comuna *</label>
+          <input type="text" [(ngModel)]="form.comuna" name="comuna" required />
+        </div>
+      </div>
+      <div class="envios__row">
+        <div class="form-field">
+          <label>Calle *</label>
+          <input type="text" [(ngModel)]="form.calle" name="calle" required />
+        </div>
+        <div class="form-field envios__field--sm">
+          <label>Número *</label>
+          <input type="text" [(ngModel)]="form.numero" name="numero" required />
+        </div>
+        <div class="form-field envios__field--sm">
+          <label>Depto / Casa</label>
+          <input type="text" [(ngModel)]="form.depto" name="depto" placeholder="opcional" />
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Referencia</label>
+        <input type="text" [(ngModel)]="form.referencia" name="referencia" placeholder="opcional" />
+      </div>
+    </fieldset>
+
+    <fieldset class="envios__section">
+      <legend>Resumen de orden</legend>
+      <div class="envios__row">
+        <div class="form-field envios__field--sm">
+          <label>Cantidad de ítems *</label>
+          <input type="number" [(ngModel)]="form.itemCount" name="itemCount" required min="1" />
+        </div>
+        <div class="form-field">
+          <label>Total (CLP) *</label>
+          <input type="number" [(ngModel)]="form.total" name="total" required min="0" />
+        </div>
+      </div>
+    </fieldset>
+
+    @if (errorMessage) {
+      <p class="error-msg">{{ errorMessage }}</p>
+    }
+
+    <button type="submit" class="btn-primary" [disabled]="f.invalid || isLoading">
+      {{ isLoading ? 'Generando...' : 'Generar etiqueta ZPL' }}
+    </button>
+
+  </form>
+
+  @if (zplResult) {
+    <div class="envios__result">
+      <div class="envios__result-header">
+        <span class="envios__result-title">Etiqueta generada</span>
+        <button class="btn-secondary" (click)="downloadZpl()">Descargar .zpl</button>
+      </div>
+      <textarea class="envios__zpl" readonly rows="18">{{ zplResult }}</textarea>
+      <p class="envios__hint">Envía este archivo a tu impresora Zebra por USB o red. También puedes copiarlo y pegarlo en ZPLViewer para previsualizar.</p>
+    </div>
+  }
+</div>
