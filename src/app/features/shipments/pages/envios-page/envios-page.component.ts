@@ -14,7 +14,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 export class EnviosPageComponent {
   private readonly CONTEXT = 'EnviosPage';
 
-  form: GenerateLabelRequest = {
+  form = {
     trackingCode: '',
     fullName: '',
     rut: '',
@@ -27,8 +27,8 @@ export class EnviosPageComponent {
     numero: '',
     depto: '',
     referencia: '',
-    itemCount: 1,
-    total: 0,
+    itemCount: null as number | null,
+    total: null as number | null,
   };
 
   isLoading = false;
@@ -47,10 +47,20 @@ export class EnviosPageComponent {
     this.errorMessage = '';
 
     const body: GenerateLabelRequest = {
-      ...this.form,
+      trackingCode: this.form.trackingCode || undefined,
+      fullName: this.form.fullName,
+      rut: this.form.rut,
       email: this.form.email || undefined,
+      phone: this.form.phone,
+      region: this.form.region,
+      ciudad: this.form.ciudad,
+      comuna: this.form.comuna,
+      calle: this.form.calle,
+      numero: this.form.numero,
       depto: this.form.depto || undefined,
       referencia: this.form.referencia || undefined,
+      itemCount: this.form.itemCount ?? undefined,
+      total: this.form.total ?? undefined,
     };
 
     this.shipments.generateLabel(body).pipe(

@@ -7,8 +7,8 @@
     <fieldset class="envios__section">
       <legend>Despacho Starken</legend>
       <div class="form-field">
-        <label>Número de seguimiento *</label>
-        <input type="text" [(ngModel)]="form.trackingCode" name="trackingCode" required placeholder="ST123456789CL" />
+        <label>Número de seguimiento</label>
+        <input type="text" [(ngModel)]="form.trackingCode" name="trackingCode" placeholder="Opcional — se imprime como código de barras si se ingresa" />
       </div>
     </fieldset>
 
@@ -73,15 +73,15 @@
     </fieldset>
 
     <fieldset class="envios__section">
-      <legend>Resumen de orden</legend>
+      <legend>Resumen de orden <span class="envios__optional">(opcional)</span></legend>
       <div class="envios__row">
         <div class="form-field envios__field--sm">
-          <label>Cantidad de ítems *</label>
-          <input type="number" [(ngModel)]="form.itemCount" name="itemCount" required min="1" />
+          <label>Cantidad de ítems</label>
+          <input type="number" [(ngModel)]="form.itemCount" name="itemCount" min="1" placeholder="ej. 2" />
         </div>
         <div class="form-field">
-          <label>Total (CLP) *</label>
-          <input type="number" [(ngModel)]="form.total" name="total" required min="0" />
+          <label>Total (CLP)</label>
+          <input type="number" [(ngModel)]="form.total" name="total" min="0" placeholder="ej. 49990" />
         </div>
       </div>
     </fieldset>

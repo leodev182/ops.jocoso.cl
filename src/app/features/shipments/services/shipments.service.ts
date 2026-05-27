@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/http/api.service';
 
 export interface GenerateLabelRequest {
-  trackingCode: string;
+  trackingCode?: string;
   fullName: string;
   rut: string;
   email?: string;
@@ -15,8 +15,8 @@ export interface GenerateLabelRequest {
   numero: string;
   depto?: string;
   referencia?: string;
-  itemCount: number;
-  total: number;
+  itemCount?: number;
+  total?: number;
 }
 
 @Injectable({ providedIn: 'root' })
