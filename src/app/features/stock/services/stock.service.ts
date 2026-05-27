@@ -4,6 +4,12 @@ import { ApiService } from '../../../core/http/api.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { StockLevel, StockMovement, StockAdjustRequest } from '../../../core/models/stock.model';
 
+export interface ReconcileResult {
+  total: number;
+  processed: number;
+  errors: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class StockService {
   private readonly CONTEXT = 'StockService';
@@ -32,5 +38,10 @@ export class StockService {
   decrease(body: StockAdjustRequest): Observable<void> {
     this.logger.info(this.CONTEXT, `Decreasing stock for ${body.variantId} by ${body.quantity}`);
     return this.api.post<void>('/stock/decrease', body);
+  }
+
+  reconcileMlOrders(since: string): Observable<ReconcileResult> {
+    this.logger.info(this.CONTEXT, `Reconciling ML orders since ${since}`);
+    return this.api.post<ReconcileResult>('/ml/reconcile', { since });
   }
 }

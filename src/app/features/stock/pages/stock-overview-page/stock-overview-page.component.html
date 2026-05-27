@@ -1,64 +1,123 @@
 <div class="stock-overview">
   <h2>Stock</h2>
 
-  <input
-    class="stock-overview__search"
-    type="text"
-    placeholder="Buscar producto por nombre..."
-    [(ngModel)]="searchTerm"
-    (ngModelChange)="onSearchChange()"
-  />
+  <div class="stock-overview__tabs">
+    <button
+      class="stock-overview__tab"
+      [class.stock-overview__tab--active]="activeTab === 'inventario'"
+      (click)="activeTab = 'inventario'"
+    >Inventario</button>
+    <button
+      class="stock-overview__tab"
+      [class.stock-overview__tab--active]="activeTab === 'reconciliar'"
+      (click)="activeTab = 'reconciliar'"
+    >Reconciliar ML</button>
+  </div>
 
-  @if (isLoading) {
-    <p class="stock-overview__loading">Buscando...</p>
+  @if (activeTab === 'inventario') {
+    <input
+      class="stock-overview__search"
+      type="text"
+      placeholder="Buscar producto por nombre..."
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()"
+    />
+
+    @if (isLoading) {
+      <p class="stock-overview__loading">Buscando...</p>
+    }
+
+    @if (errorMessage) {
+      <p class="error-msg">{{ errorMessage }}</p>
+    }
+
+    @if (!isLoading && products.length === 0 && !errorMessage) {
+      <p class="stock-overview__empty">Sin productos encontrados.</p>
+    }
+
+    @for (product of products; track product.id) {
+      <div class="stock-overview__product">
+        <h3 class="stock-overview__product-title">{{ product.title }}</h3>
+
+        @if (!product.variants || product.variants.length === 0) {
+          <p class="stock-overview__no-variants">Sin variantes — abre el producto para crearlas.</p>
+        }
+
+        @for (variant of product.variants ?? []; track variant.id) {
+          <div class="stock-overview__variant" (click)="goToVariantStock(variant.id)">
+            <span class="stock-overview__sku">{{ variant.sku }}</span>
+            <span class="stock-overview__price">$ {{ variant.price }}</span>
+            <span class="stock-overview__stock" [class.stock-overview__stock--low]="variant.stock <= 3">
+              {{ variant.stock }} uds.
+            </span>
+            <span class="stock-overview__link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </span>
+          </div>
+        }
+      </div>
+    }
+
+    @if (totalPages > 1) {
+      <div class="stock-overview__pagination">
+        <button
+          class="stock-overview__page-btn"
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+        >← Anterior</button>
+
+        <span class="stock-overview__page-info">{{ currentPage }} / {{ totalPages }}</span>
+
+        <button
+          class="stock-overview__page-btn"
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >Siguiente →</button>
+      </div>
+    }
   }
 
-  @if (errorMessage) {
-    <p class="error-msg">{{ errorMessage }}</p>
-  }
+  @if (activeTab === 'reconciliar') {
+    <div class="stock-overview__reconcile">
+      <p class="stock-overview__reconcile-desc">
+        Consulta las órdenes pagadas en MercadoLibre desde una fecha y descuenta el stock de las que no fueron procesadas por webhook.
+        La operación es idempotente — no doble-descuenta lo que ya está registrado.
+      </p>
 
-  @if (!isLoading && products.length === 0 && !errorMessage) {
-    <p class="stock-overview__empty">Sin productos encontrados.</p>
-  }
+      <div class="stock-overview__reconcile-form">
+        <div class="form-field">
+          <label>Desde</label>
+          <input type="date" [(ngModel)]="reconcileSince" [disabled]="isReconciling" />
+        </div>
+        <button
+          class="btn-primary"
+          (click)="onReconcile()"
+          [disabled]="!reconcileSince || isReconciling"
+        >
+          {{ isReconciling ? 'Reconciliando...' : 'Reconciliar órdenes' }}
+        </button>
+      </div>
 
-  @for (product of products; track product.id) {
-    <div class="stock-overview__product">
-      <h3 class="stock-overview__product-title">{{ product.title }}</h3>
-
-      @if (!product.variants || product.variants.length === 0) {
-        <p class="stock-overview__no-variants">Sin variantes — abre el producto para crearlas.</p>
+      @if (reconcileError) {
+        <p class="error-msg">{{ reconcileError }}</p>
       }
 
-      @for (variant of product.variants ?? []; track variant.id) {
-        <div class="stock-overview__variant" (click)="goToVariantStock(variant.id)">
-          <span class="stock-overview__sku">{{ variant.sku }}</span>
-          <span class="stock-overview__price">$ {{ variant.price }}</span>
-          <span class="stock-overview__stock" [class.stock-overview__stock--low]="variant.stock <= 3">
-            {{ variant.stock }} uds.
-          </span>
-          <span class="stock-overview__link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </span>
+      @if (reconcileResult) {
+        <div class="stock-overview__reconcile-result">
+          <div class="stock-overview__reconcile-stat">
+            <span class="stock-overview__reconcile-num">{{ reconcileResult.total }}</span>
+            <span class="stock-overview__reconcile-label">órdenes encontradas</span>
+          </div>
+          <div class="stock-overview__reconcile-stat">
+            <span class="stock-overview__reconcile-num stock-overview__reconcile-num--ok">{{ reconcileResult.processed }}</span>
+            <span class="stock-overview__reconcile-label">procesadas</span>
+          </div>
+          <div class="stock-overview__reconcile-stat">
+            <span class="stock-overview__reconcile-num stock-overview__reconcile-num--err">{{ reconcileResult.errors }}</span>
+            <span class="stock-overview__reconcile-label">errores</span>
+          </div>
         </div>
       }
-    </div>
-  }
-
-  @if (totalPages > 1) {
-    <div class="stock-overview__pagination">
-      <button
-        class="stock-overview__page-btn"
-        [disabled]="currentPage === 1"
-        (click)="goToPage(currentPage - 1)"
-      >← Anterior</button>
-
-      <span class="stock-overview__page-info">{{ currentPage }} / {{ totalPages }}</span>
-
-      <button
-        class="stock-overview__page-btn"
-        [disabled]="currentPage === totalPages"
-        (click)="goToPage(currentPage + 1)"
-      >Siguiente →</button>
     </div>
   }
 </div>

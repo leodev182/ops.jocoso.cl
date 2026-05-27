@@ -6,6 +6,7 @@ import { catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'r
 import { ProductsService } from '../../../products/services/products.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Product } from '../../../../core/models/product.model';
+import { StockService, ReconcileResult } from '../../services/stock.service';
 
 @Component({
   selector: 'app-stock-overview-page',
@@ -20,6 +21,8 @@ export class StockOverviewPageComponent implements OnInit, OnDestroy {
   private search$ = new Subject<string>();
   private sub = new Subscription();
 
+  activeTab: 'inventario' | 'reconciliar' = 'inventario';
+
   searchTerm = '';
   products: Product[] = [];
   isLoading = false;
@@ -28,8 +31,14 @@ export class StockOverviewPageComponent implements OnInit, OnDestroy {
   totalPages = 1;
   total = 0;
 
+  reconcileSince = '';
+  isReconciling = false;
+  reconcileResult: ReconcileResult | null = null;
+  reconcileError = '';
+
   constructor(
     private productsService: ProductsService,
+    private stockService: StockService,
     private router: Router,
     private logger: LoggerService,
   ) {}
@@ -71,6 +80,25 @@ export class StockOverviewPageComponent implements OnInit, OnDestroy {
 
   goToVariantStock(variantId: string): void {
     this.router.navigate(['/stock', variantId]);
+  }
+
+  onReconcile(): void {
+    if (!this.reconcileSince || this.isReconciling) return;
+    this.isReconciling = true;
+    this.reconcileResult = null;
+    this.reconcileError = '';
+
+    this.stockService.reconcileMlOrders(this.reconcileSince).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Reconcile failed', err);
+        this.reconcileError = 'Error al reconciliar. Revisa los logs del servidor.';
+        this.isReconciling = false;
+        return of(null);
+      }),
+    ).subscribe(res => {
+      if (res) this.reconcileResult = res;
+      this.isReconciling = false;
+    });
   }
 
   private load(page: number): void {
