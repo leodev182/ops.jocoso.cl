@@ -13,7 +13,7 @@
     @for (order of orders; track order.id) {
       <tr class="orders-table__row" (click)="orderClick.emit(order)">
         <td><code>{{ order.id | slice:0:8 }}…</code></td>
-        <td><code class="user-id">{{ order.userId | slice:0:8 }}…</code></td>
+        <td>{{ order.user?.name || order.user?.email || (order.userId | slice:0:8) + '…' }}</td>
         <td><span class="badge badge--{{ order.status | lowercase }}">{{ order.status | lowercase }}</span></td>
         <td>$ {{ order.totalAmount }}</td>
         <td>{{ order.createdAt | date:'dd/MM/yy' }}</td>

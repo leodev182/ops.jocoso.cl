@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, LowerCasePipe } from '@angular/common';
 import { catchError, of } from 'rxjs';
 import { OrdersService } from '../../services/orders.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { Order } from '../../../../core/models/order.model';
+import { Order, OrderStatus } from '../../../../core/models/order.model';
 
 @Component({
   selector: 'app-order-detail-page',
@@ -16,15 +16,27 @@ import { Order } from '../../../../core/models/order.model';
 export class OrderDetailPageComponent implements OnInit {
   private readonly CONTEXT = 'OrderDetailPage';
 
+  readonly statusOptions: { value: OrderStatus; label: string }[] = [
+    { value: 'CONFIRMED', label: 'Pago confirmado' },
+    { value: 'PROCESSING', label: 'Procesando' },
+    { value: 'SHIPPED', label: 'En camino' },
+    { value: 'COMPLETED', label: 'Entregado' },
+    { value: 'CANCELLED', label: 'Cancelado' },
+  ];
+
   order: Order | null = null;
   loadError = '';
   isGeneratingLabel = false;
   labelError = '';
   zpl = '';
   trackingCode = '';
+  isUpdatingStatus = false;
+  statusError = '';
+  isDeleting = false;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private ordersService: OrdersService,
     private logger: LoggerService,
   ) {}
@@ -82,5 +94,37 @@ export class OrderDetailPageComponent implements OnInit {
 
   subtotal(price: string, quantity: number): string {
     return (parseFloat(price) * quantity).toFixed(0);
+  }
+
+  onChangeStatus(value: string): void {
+    if (!this.order || !value || value === this.order.status) return;
+    this.isUpdatingStatus = true;
+    this.statusError = '';
+    this.ordersService.updateStatus(this.order.id, value as OrderStatus).pipe(
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Failed to update status', err);
+        this.statusError = err?.error?.message ?? 'No se pudo cambiar el estado.';
+        this.isUpdatingStatus = false;
+        return of(null);
+      }),
+    ).subscribe(updated => {
+      if (updated) this.order = { ...this.order!, status: updated.status };
+      this.isUpdatingStatus = false;
+    });
+  }
+
+  onDelete(): void {
+    if (!this.order) return;
+    if (!confirm('¿Eliminar esta orden? Se borra junto con su pago y no se puede deshacer.')) return;
+    this.isDeleting = true;
+    this.statusError = '';
+    this.ordersService.delete(this.order.id).subscribe({
+      next: () => this.router.navigate(['/orders']),
+      error: (err) => {
+        this.logger.error(this.CONTEXT, 'Failed to delete order', err);
+        this.statusError = err?.error?.message ?? 'No se pudo eliminar la orden.';
+        this.isDeleting = false;
+      },
+    });
   }
 }

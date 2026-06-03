@@ -7,7 +7,28 @@
     <div class="order-detail-page__header">
       <h2>Orden</h2>
       <code class="order-detail-page__id">{{ order.id }}</code>
+
+      <div class="order-detail-page__actions">
+        <label class="status-control">
+          <span>Estado:</span>
+          <select #statusSel [disabled]="isUpdatingStatus" (change)="onChangeStatus(statusSel.value)">
+            <option [value]="order.status" selected>{{ order.status }}</option>
+            @for (opt of statusOptions; track opt.value) {
+              @if (opt.value !== order.status) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            }
+          </select>
+        </label>
+        <button class="btn-danger" [disabled]="isDeleting" (click)="onDelete()">
+          {{ isDeleting ? 'Eliminando…' : 'Eliminar orden' }}
+        </button>
+      </div>
     </div>
+
+    @if (statusError) {
+      <p class="error-msg">{{ statusError }}</p>
+    }
 
     <div class="order-detail-page__meta">
       <div class="meta-card">
@@ -20,7 +41,10 @@
       </div>
       <div class="meta-card">
         <span class="meta-card__label">Usuario</span>
-        <code>{{ order.userId }}</code>
+        <span>{{ order.user?.name || order.user?.email || order.userId }}</span>
+        @if (order.user?.name && order.user?.email) {
+          <span class="meta-card__sub">{{ order.user?.email }}</span>
+        }
       </div>
       <div class="meta-card">
         <span class="meta-card__label">Fecha</span>
@@ -34,7 +58,7 @@
         <table class="items-table">
           <thead>
             <tr>
-              <th>Variante ID</th>
+              <th>Producto</th>
               <th>Cantidad</th>
               <th>Precio unit.</th>
               <th>Subtotal</th>
@@ -43,7 +67,10 @@
           <tbody>
             @for (item of order.items; track item.id) {
               <tr>
-                <td><code>{{ item.variantId }}</code></td>
+                <td>
+                  {{ item.productName || item.variantId }}
+                  @if (item.sku) { <span class="item-sku">{{ item.sku }}</span> }
+                </td>
                 <td>{{ item.quantity }}</td>
                 <td>$ {{ item.price }}</td>
                 <td>$ {{ subtotal(item.price, item.quantity) }}</td>

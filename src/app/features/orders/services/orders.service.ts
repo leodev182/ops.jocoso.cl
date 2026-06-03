@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../core/http/api.service';
 import { LoggerService } from '../../../core/services/logger.service';
-import { Order } from '../../../core/models/order.model';
+import { Order, OrderStatus } from '../../../core/models/order.model';
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
@@ -25,5 +25,15 @@ export class OrdersService {
 
   generateShippingLabel(id: string): Observable<{ trackingCode: string; zpl: string }> {
     return this.api.post<{ trackingCode: string; zpl: string }>(`/orders/${id}/shipping-label`, {});
+  }
+
+  updateStatus(id: string, status: OrderStatus): Observable<Order> {
+    this.logger.debug(this.CONTEXT, `Updating order ${id} status to ${status}`);
+    return this.api.patch<Order>(`/orders/${id}/status`, { status });
+  }
+
+  delete(id: string): Observable<void> {
+    this.logger.debug(this.CONTEXT, `Deleting order ${id}`);
+    return this.api.delete<void>(`/orders/${id}`);
   }
 }
