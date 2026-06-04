@@ -34,6 +34,11 @@ export const routes: Routes = [
           import('./features/orders/orders.module').then(m => m.OrdersModule),
       },
       {
+        path: 'users',
+        loadChildren: () =>
+          import('./features/users/users.module').then(m => m.UsersModule),
+      },
+      {
         path: 'mercadolibre',
         loadChildren: () =>
           import('./features/mercadolibre/mercadolibre.module').then(m => m.MercadolibreModule),

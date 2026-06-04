@@ -1,0 +1,60 @@
+<div class="users-page">
+  <div class="users-page__header">
+    <h2>Usuarios</h2>
+  </div>
+
+  @if (loadError) {
+    <p class="error-msg">{{ loadError }}</p>
+  }
+  @if (actionError) {
+    <p class="error-msg">{{ actionError }}</p>
+  }
+
+  <table class="users-table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Teléfono</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of users; track user.id) {
+        <tr [class.users-table__row--banned]="!user.isActive">
+          <td>{{ user.name || '—' }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.phone || '—' }}</td>
+          <td><span class="role-badge">{{ user.role }}</span></td>
+          <td>
+            @if (user.isActive) {
+              <span class="status-pill status-pill--active">Activo</span>
+            } @else {
+              <span class="status-pill status-pill--banned">Baneado</span>
+            }
+          </td>
+          <td class="users-table__action">
+            <button
+              class="btn-ban"
+              [class.btn-ban--reactivate]="!user.isActive"
+              [disabled]="actingId === user.id"
+              (click)="toggleBan(user)"
+            >
+              @if (actingId === user.id) {
+                …
+              } @else {
+                {{ user.isActive ? 'Banear' : 'Reactivar' }}
+              }
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="users-table__empty">No hay usuarios</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
