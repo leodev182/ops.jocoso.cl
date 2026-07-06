@@ -209,7 +209,7 @@ export class ProductDetailPageComponent implements OnInit {
         this.logger.error(this.CONTEXT, 'Failed to delete product', err);
         this.errorMessage = 'Error al eliminar el producto.';
         this.isDeleting = false;
-        return of(null);
+        return EMPTY;
       }),
     ).subscribe(() => {
       this.router.navigate(['/products']);
