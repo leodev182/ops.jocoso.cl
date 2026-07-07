@@ -18,6 +18,7 @@ export class LogsPageComponent implements OnInit, OnDestroy {
   searchTerm = '';
   selectedLevel = 0;
   autoRefresh = false;
+  expandedRows = new Set<number>();
 
   private refreshSub?: Subscription;
 
@@ -89,6 +90,18 @@ export class LogsPageComponent implements OnInit, OnDestroy {
     if (e.req) return `${e.req.method} ${e.req.url}${e.res ? ' → ' + e.res.statusCode : ''}`;
     if (e.err) return `${e.msg}: ${e.err}`;
     return e.msg;
+  }
+
+  toggleRow(i: number): void {
+    if (this.expandedRows.has(i)) {
+      this.expandedRows.delete(i);
+    } else {
+      this.expandedRows.add(i);
+    }
+  }
+
+  detailJson(e: LogEntry): string {
+    return JSON.stringify(e, null, 2);
   }
 
   timeAgo(ts: number): string {

@@ -44,13 +44,21 @@
               <td colspan="4" class="logs-table__empty">Sin logs registrados aún. Los logs aparecen luego del próximo deploy.</td>
             </tr>
           }
-          @for (e of entries; track e.time) {
-            <tr [class]="'log-row log-row--' + levelLabel(e.level).toLowerCase()">
+          @for (e of entries; track e.time; let i = $index) {
+            <tr [class]="'log-row log-row--' + levelLabel(e.level).toLowerCase() + (expandedRows.has(i) ? ' log-row--expanded' : '')"
+                (click)="toggleRow(i)">
               <td><span class="badge" [class]="levelClass(e.level)">{{ levelLabel(e.level) }}</span></td>
               <td class="log-context">{{ e.context ?? '—' }}</td>
               <td class="log-msg">{{ messageFor(e) }}</td>
               <td class="log-time">{{ timeAgo(e.time) }}</td>
             </tr>
+            @if (expandedRows.has(i)) {
+              <tr class="log-detail-row">
+                <td colspan="4">
+                  <pre class="log-detail">{{ detailJson(e) }}</pre>
+                </td>
+              </tr>
+            }
           }
         </tbody>
       </table>
