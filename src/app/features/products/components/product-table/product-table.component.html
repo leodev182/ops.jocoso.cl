@@ -12,7 +12,14 @@
     @for (product of products; track product.id) {
       <tr>
         <td>{{ product.title }}</td>
-        <td><span class="badge badge--{{ product.status | lowercase }}">{{ product.status }}</span></td>
+        <td>
+          <button class="badge badge--{{ product.status | lowercase }}"
+                  [class.badge--clickable]="product.status !== 'INACTIVE'"
+                  [title]="product.status === 'ACTIVE' ? 'Pausar producto' : product.status === 'PAUSED' ? 'Reactivar producto' : ''"
+                  (click)="toggleStatus(product, $event)">
+            {{ product.status }}
+          </button>
+        </td>
         <td>{{ product.mlItemId ?? '—' }}</td>
         <td>{{ product.createdAt | date:'shortDate' }}</td>
         <td>

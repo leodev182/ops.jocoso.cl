@@ -24,6 +24,7 @@
     <app-product-table
       [products]="products"
       (productClick)="onProductClick($event)"
+      (statusChange)="onProductStatusChange($event)"
     ></app-product-table>
   </div>
 

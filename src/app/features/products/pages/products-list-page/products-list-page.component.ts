@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, of } from 'rxjs';
+import { catchError, EMPTY, of, tap } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Product, ProductStatus } from '../../../../core/models/product.model';
@@ -58,6 +58,18 @@ export class ProductsListPageComponent implements OnInit {
 
   onCreateProduct(): void {
     this.router.navigate(['/products/new']);
+  }
+
+  onProductStatusChange({ product, status }: { product: Product; status: ProductStatus }): void {
+    this.productsService.update(product.id, { status }).pipe(
+      tap(() => {
+        this.products = this.products.map(p => p.id === product.id ? { ...p, status } : p);
+      }),
+      catchError(err => {
+        this.logger.error(this.CONTEXT, 'Failed to update product status', err);
+        return EMPTY;
+      }),
+    ).subscribe();
   }
 
   private load(page: number): void {

@@ -1,3 +1,23 @@
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: none;
+  cursor: default;
+
+  &--active   { background: #dcfce7; color: #15803d; }
+  &--paused   { background: #fef9c3; color: #854d0e; }
+  &--inactive { background: #f3f4f6; color: #6b7280; }
+
+  &--clickable {
+    cursor: pointer;
+    &:hover { filter: brightness(0.93); }
+  }
+}
+
 .product-table {
   width: 100%;
   border-collapse: collapse;
