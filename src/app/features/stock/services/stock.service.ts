@@ -7,6 +7,7 @@ import { StockLevel, StockMovement, StockAdjustRequest } from '../../../core/mod
 export interface ReconcileResult {
   total: number;
   processed: number;
+  skipped: number;
   errors: number;
 }
 
