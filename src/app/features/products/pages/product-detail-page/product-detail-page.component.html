@@ -155,10 +155,18 @@
       <h3>MercadoLibre</h3>
       @if (product.mlItemId) {
         <div class="section-header">
-          <p style="margin:0">Vinculado como <strong>{{ product.mlItemId }}</strong></p>
-          <button class="btn-link btn-link--danger" [disabled]="isSyncing" (click)="onUnlinkFromML()">
-            Desvincular
-          </button>
+          <div>
+            <p style="margin:0">Vinculado como <strong>{{ product.mlItemId }}</strong></p>
+            <p class="form-field__hint">Puedes agregar otra publicación al mismo inventario.</p>
+          </div>
+          <div class="section-header__actions">
+            <button class="btn-secondary" [disabled]="isSyncing" (click)="showMlLinkModal = true">
+              Agregar publicación
+            </button>
+            <button class="btn-link btn-link--danger" [disabled]="isSyncing" (click)="onUnlinkFromML()">
+              Desvincular todas
+            </button>
+          </div>
         </div>
         @if (product.images.length) {
           <div class="ml-images">
