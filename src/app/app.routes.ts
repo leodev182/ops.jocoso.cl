@@ -58,6 +58,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/shipments/shipments.module').then(m => m.ShipmentsModule),
       },
+      {
+        path: 'ventas-manuales',
+        loadChildren: () =>
+          import('./features/ventas-manuales/ventas-manuales.module').then(m => m.VentasManualesModule),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

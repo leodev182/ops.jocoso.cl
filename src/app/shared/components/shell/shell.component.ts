@@ -16,6 +16,7 @@ const ICON_ML   = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18
 const ICON_LOGS = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
 const ICON_TAGS = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`;
 const ICON_SHIPMENTS = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`;
+const ICON_VENTAS = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`;
 
 @Component({
   selector: 'app-shell',
@@ -36,7 +37,8 @@ export class ShellComponent {
     { path: '/mercadolibre',  label: 'MercadoLibre',   icon: ICON_ML        },
     { path: '/logs',          label: 'Logs',           icon: ICON_LOGS      },
     { path: '/tags',          label: 'Tags',           icon: ICON_TAGS      },
-    { path: '/envios',        label: 'Envíos',         icon: ICON_SHIPMENTS },
+    { path: '/envios',          label: 'Envíos',          icon: ICON_SHIPMENTS },
+    { path: '/ventas-manuales', label: 'Ventas manuales', icon: ICON_VENTAS    },
   ];
 
   constructor(private authService: AuthService) {}

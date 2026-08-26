@@ -1,0 +1,225 @@
+@if (successOrderId) {
+  <div class="vm">
+    <div class="vm__success">
+      <div class="vm__success-icon">✓</div>
+      <h3>Venta registrada</h3>
+      <p>Orden <strong>#{{ successOrderId.slice(-8).toUpperCase() }}</strong> creada. Se envió email de confirmación al cliente.</p>
+      <button class="btn-primary" (click)="reset()">Registrar otra venta</button>
+    </div>
+  </div>
+} @else {
+<div class="vm">
+  <h2>Ventas manuales</h2>
+  <p class="vm__desc">Registra una venta presencial o por mensaje. La orden queda pagada y el stock se descuenta automáticamente.</p>
+
+  <!-- ── CLIENTE ─────────────────────────────────────────────────────── -->
+  <section class="vm__section">
+    <legend class="vm__legend">1. Cliente</legend>
+
+    @if (selectedClient) {
+      <div class="vm__client-badge">
+        <div class="vm__client-info">
+          <span class="vm__client-name">{{ selectedClient.name ?? '—' }}</span>
+          <span class="vm__client-email">{{ selectedClient.email }}</span>
+        </div>
+        <button class="btn-ghost" (click)="clearClient()">Cambiar</button>
+      </div>
+    } @else {
+      <div class="vm__search-row">
+        <input
+          type="text"
+          class="vm__input"
+          placeholder="Buscar por email o nombre…"
+          [(ngModel)]="clientQuery"
+          name="clientQuery"
+          (keyup.enter)="searchClients()"
+        />
+        <button class="btn-secondary" (click)="searchClients()" [disabled]="isSearchingClient || !clientQuery.trim()">
+          {{ isSearchingClient ? 'Buscando…' : 'Buscar' }}
+        </button>
+        <button class="btn-ghost" (click)="toggleNewClientForm()">
+          {{ showNewClientForm ? 'Cancelar' : '+ Nuevo cliente' }}
+        </button>
+      </div>
+
+      @if (clientResults.length > 0) {
+        <ul class="vm__results">
+          @for (c of clientResults; track c.id) {
+            <li class="vm__result-item" (click)="selectClient(c)">
+              <span class="vm__result-name">{{ c.name ?? '—' }}</span>
+              <span class="vm__result-email">{{ c.email }}</span>
+              @if (c.phone) { <span class="vm__result-phone">{{ c.phone }}</span> }
+            </li>
+          }
+        </ul>
+      }
+
+      @if (clientResults.length === 0 && !isSearchingClient && clientQuery && !showNewClientForm) {
+        <p class="vm__no-results">Sin resultados. ¿Deseas <button class="btn-link" (click)="toggleNewClientForm()">crear un nuevo cliente</button>?</p>
+      }
+
+      @if (showNewClientForm) {
+        <div class="vm__new-client">
+          <div class="vm__row">
+            <div class="form-field">
+              <label>Nombre *</label>
+              <input type="text" [(ngModel)]="newClient.name" name="newName" placeholder="Nombre completo" />
+            </div>
+            <div class="form-field">
+              <label>Email *</label>
+              <input type="email" [(ngModel)]="newClient.email" name="newEmail" placeholder="correo@ejemplo.com" />
+            </div>
+          </div>
+          <div class="form-field vm__field--phone">
+            <label>Teléfono</label>
+            <input type="text" [(ngModel)]="newClient.phone" name="newPhone" placeholder="+56912345678 (opcional)" />
+          </div>
+          <button
+            class="btn-primary"
+            (click)="createClient()"
+            [disabled]="isCreatingClient || !newClient.name.trim() || !newClient.email.trim()"
+          >
+            {{ isCreatingClient ? 'Creando…' : 'Crear cliente' }}
+          </button>
+        </div>
+      }
+
+      @if (clientError) {
+        <p class="error-msg">{{ clientError }}</p>
+      }
+    }
+  </section>
+
+  <!-- ── PRODUCTOS ──────────────────────────────────────────────────────── -->
+  @if (selectedClient) {
+  <section class="vm__section">
+    <legend class="vm__legend">2. Ítems</legend>
+
+    <div class="vm__search-row">
+      <input
+        type="text"
+        class="vm__input"
+        placeholder="Buscar producto…"
+        [(ngModel)]="productQuery"
+        name="productQuery"
+        (keyup.enter)="searchProducts()"
+      />
+      <button class="btn-secondary" (click)="searchProducts()" [disabled]="isLoadingProducts">
+        {{ isLoadingProducts ? 'Cargando…' : 'Buscar' }}
+      </button>
+    </div>
+
+    @if (products.length > 0) {
+      <ul class="vm__products">
+        @for (p of products; track p.id) {
+          <li class="vm__product">
+            <button class="vm__product-header" (click)="toggleProduct(p)">
+              <span class="vm__product-title">{{ p.title }}</span>
+              <span class="vm__product-toggle">{{ expandedProductId === p.id ? '▲' : '▼' }}</span>
+            </button>
+
+            @if (expandedProductId === p.id) {
+              <ul class="vm__variants">
+                @for (v of expandedVariants; track v.id) {
+                  <li class="vm__variant">
+                    <div class="vm__variant-info">
+                      <span class="vm__variant-sku">{{ v.sku }}</span>
+                      <span class="vm__variant-price">{{ formatCLP(+v.price) }}</span>
+                      <span class="vm__variant-stock">Stock: {{ v.stock }}</span>
+                    </div>
+                    <div class="vm__variant-add">
+                      <input
+                        type="number"
+                        class="vm__qty"
+                        min="1"
+                        [max]="v.stock"
+                        [(ngModel)]="variantQty[v.id]"
+                        [name]="'qty_' + v.id"
+                      />
+                      <button class="btn-secondary" (click)="addToCart(v, p.title)" [disabled]="v.stock === 0">
+                        Agregar
+                      </button>
+                    </div>
+                  </li>
+                }
+                @if (expandedVariants.length === 0) {
+                  <li class="vm__variant-empty">Sin variantes disponibles</li>
+                }
+              </ul>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    <!-- Carrito -->
+    @if (cart.length > 0) {
+      <div class="vm__cart">
+        <h4 class="vm__cart-title">Ítems seleccionados</h4>
+        <table class="vm__cart-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>SKU</th>
+              <th>Precio unit.</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of cart; track item.variantId) {
+              <tr>
+                <td>{{ item.productTitle }}</td>
+                <td class="vm__sku">{{ item.sku }}</td>
+                <td>{{ formatCLP(item.price) }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ formatCLP(item.price * item.quantity) }}</td>
+                <td><button class="btn-remove" (click)="removeFromCart(item.variantId)">✕</button></td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="vm__cart-total-label">Total</td>
+              <td colspan="2" class="vm__cart-total">{{ formatCLP(cartTotal) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    }
+  </section>
+
+  <!-- ── PAGO ───────────────────────────────────────────────────────────── -->
+  <section class="vm__section">
+    <legend class="vm__legend">3. Método de pago</legend>
+    <div class="vm__payment-options">
+      <label class="vm__radio" [class.vm__radio--active]="paymentOrigin === 'CARD'">
+        <input type="radio" [(ngModel)]="paymentOrigin" name="origin" value="CARD" /> Tarjeta
+      </label>
+      <label class="vm__radio" [class.vm__radio--active]="paymentOrigin === 'TRANSFER'">
+        <input type="radio" [(ngModel)]="paymentOrigin" name="origin" value="TRANSFER" /> Transferencia
+      </label>
+      <label class="vm__radio" [class.vm__radio--active]="paymentOrigin === 'CASH'">
+        <input type="radio" [(ngModel)]="paymentOrigin" name="origin" value="CASH" /> Efectivo
+      </label>
+    </div>
+  </section>
+
+  <!-- ── SUBMIT ─────────────────────────────────────────────────────────── -->
+  @if (submitError) {
+    <p class="error-msg">{{ submitError }}</p>
+  }
+
+  <div class="vm__submit-row">
+    @if (cart.length > 0) {
+      <span class="vm__total-label">Total: <strong>{{ formatCLP(cartTotal) }}</strong></span>
+    }
+    <button class="btn-primary btn-primary--lg" (click)="submit()" [disabled]="!canSubmit">
+      {{ isSubmitting ? 'Registrando…' : 'Registrar venta' }}
+    </button>
+  </div>
+  }
+
+</div>
+}
