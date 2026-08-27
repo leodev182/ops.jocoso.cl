@@ -1,0 +1,105 @@
+<div class="cd">
+  <div class="cd__header">
+    <button class="btn-back" (click)="goBack()">← Volver</button>
+    @if (concurso) {
+      <div class="cd__title-row">
+        <h2>{{ concurso.titulo }}</h2>
+        <span class="badge badge--{{ concurso.estado | lowercase }}">{{ concurso.estado }}</span>
+      </div>
+    }
+  </div>
+
+  @if (loadError) { <p class="error-msg">{{ loadError }}</p> }
+  @if (actionError) { <p class="error-msg">{{ actionError }}</p> }
+
+  @if (concurso) {
+
+    <!-- ── Info ────────────────────────────────────────────────────────── -->
+    <div class="cd__info-grid">
+      <div class="cd__info-item">
+        <span class="cd__info-label">Monto mínimo</span>
+        <span class="cd__info-value">{{ formatCLP(concurso.montoMinimo) }}</span>
+      </div>
+      <div class="cd__info-item">
+        <span class="cd__info-label">Fecha desde</span>
+        <span class="cd__info-value">{{ concurso.fechaDesde | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="cd__info-item">
+        <span class="cd__info-label">Fecha hasta</span>
+        <span class="cd__info-value">{{ concurso.fechaHasta ? (concurso.fechaHasta | date:'dd/MM/yyyy') : 'Sin límite' }}</span>
+      </div>
+      <div class="cd__info-item">
+        <span class="cd__info-label">Participantes</span>
+        <span class="cd__info-value cd__info-value--highlight">{{ participantes.length }}</span>
+      </div>
+      <div class="cd__info-item">
+        <span class="cd__info-label">Múltiples tickets</span>
+        <span class="cd__info-value">{{ concurso.permiteMultiplesParticipaciones ? 'Sí' : 'No' }}</span>
+      </div>
+    </div>
+
+    <!-- ── Acciones ────────────────────────────────────────────────────── -->
+    <div class="cd__actions">
+      @if (concurso.estado !== 'FINISHED') {
+        <button class="btn-secondary" (click)="goToEditar()">Editar</button>
+      }
+      <button class="btn-secondary" (click)="onSync()" [disabled]="isSyncing">
+        {{ isSyncing ? 'Sincronizando…' : 'Sincronizar órdenes' }}
+      </button>
+      @if (concurso.estado === 'ACTIVE') {
+        <button class="btn-ruleta" (click)="onDraw()" [disabled]="isDrawing || participantes.length === 0">
+          🎰 {{ isDrawing ? 'Ejecutando…' : 'Ejecutar Ruleta' }}
+        </button>
+      }
+      <a class="btn-link-ext" [href]="reglasUrl" target="_blank">Ver bases públicas ↗</a>
+      <a class="btn-link-ext" [href]="legalesUrl" target="_blank">Ver legales ↗</a>
+    </div>
+
+    <!-- ── Ganador ─────────────────────────────────────────────────────── -->
+    @if (concurso.ganadorOrdenId && concurso.resultadoVisible) {
+      <div class="cd__winner">
+        <div class="cd__winner-icon">🏆</div>
+        <div class="cd__winner-info">
+          <p class="cd__winner-label">Ganador del concurso</p>
+          <p class="cd__winner-name">{{ ganadorParticipante?.clienteNombre ?? '—' }}</p>
+          <p class="cd__winner-email">{{ ganadorParticipante?.clienteEmail ?? '—' }}</p>
+          <p class="cd__winner-orden">Orden: {{ concurso.ganadorOrdenId.slice(0, 8).toUpperCase() }} · {{ ganadorParticipante?.ordenTotal ? formatCLP(ganadorParticipante!.ordenTotal!) : '' }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- ── Participantes ───────────────────────────────────────────────── -->
+    <div class="cd__participantes">
+      <h3>Participantes ({{ participantes.length }})</h3>
+      @if (participantes.length === 0) {
+        <p class="cd__empty">Sin participantes aún. Usa "Sincronizar órdenes" si el concurso tiene fechas pasadas.</p>
+      } @else {
+        <table class="cd__table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Email</th>
+              <th>Orden</th>
+              <th>Monto</th>
+              <th>Origen</th>
+              <th>Fecha compra</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of participantes; track p.id) {
+              <tr [class.cd__winner-row]="p.ordenId === concurso.ganadorOrdenId">
+                <td>{{ p.clienteNombre ?? '—' }}</td>
+                <td class="cd__email">{{ p.clienteEmail ?? '—' }}</td>
+                <td class="cd__id">{{ p.ordenId.slice(0, 8).toUpperCase() }}</td>
+                <td>{{ p.ordenTotal ? formatCLP(p.ordenTotal) : '—' }}</td>
+                <td><span class="badge badge--origin-{{ p.ordenOrigen?.toLowerCase() }}">{{ p.ordenOrigen }}</span></td>
+                <td>{{ p.ordenFecha | date:'dd/MM/yy HH:mm' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+  }
+</div>

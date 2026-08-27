@@ -63,6 +63,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/ventas-manuales/ventas-manuales.module').then(m => m.VentasManualesModule),
       },
+      {
+        path: 'concursos',
+        loadChildren: () =>
+          import('./features/concursos/concursos.module').then(m => m.ConcursosModule),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

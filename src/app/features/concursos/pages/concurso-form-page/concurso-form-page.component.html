@@ -1,0 +1,99 @@
+<div class="cf">
+  <div class="cf__header">
+    <button class="btn-back" (click)="goBack()">← Volver</button>
+    <h2>{{ isEdit ? 'Editar concurso' : 'Nuevo concurso' }}</h2>
+  </div>
+
+  @if (isLoading) { <p class="cf__loading">Cargando…</p> }
+
+  @if (!isLoading) {
+  <form class="cf__form" (ngSubmit)="onSubmit()" #f="ngForm">
+
+    <fieldset class="cf__section">
+      <legend class="cf__legend">Información general</legend>
+
+      <div class="form-field">
+        <label>Título *</label>
+        <input type="text" [(ngModel)]="form.titulo" name="titulo" required maxlength="120" placeholder="Ej: Gran Concurso Primavera 2026" />
+      </div>
+
+      <div class="cf__row">
+        <div class="form-field">
+          <label>Monto mínimo de compra (CLP) *</label>
+          <input type="number" [(ngModel)]="form.montoMinimo" name="montoMinimo" required min="1" placeholder="Ej: 50000" />
+        </div>
+      </div>
+
+      <div class="cf__row">
+        <div class="form-field">
+          <label>Fecha desde *</label>
+          <input type="date" [(ngModel)]="form.fechaDesde" name="fechaDesde" required />
+        </div>
+        <div class="form-field">
+          <label>Fecha hasta <span class="cf__optional">(opcional)</span></label>
+          <input type="date" [(ngModel)]="form.fechaHasta" name="fechaHasta" />
+        </div>
+      </div>
+
+      <div class="cf__toggles">
+        <label class="cf__toggle">
+          <input type="checkbox" [(ngModel)]="form.permiteMultiplesParticipaciones" name="permiteMultiples" />
+          <span>Múltiples participaciones por cliente</span>
+          <small>Cada compra que cumpla las condiciones suma un ticket</small>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="cf__section">
+      <legend class="cf__legend">Imagen promocional</legend>
+
+      @if (form.imagenPromoUrl) {
+        <div class="cf__imagen-preview">
+          <img [src]="form.imagenPromoUrl" alt="Imagen promo" />
+          <button type="button" class="btn-remove" (click)="clearImagen()">Eliminar imagen</button>
+        </div>
+      } @else {
+        <div class="form-field">
+          <label>Subir imagen <span class="cf__optional">(JPEG, PNG, WebP — máx. 10MB)</span></label>
+          <input type="file" accept="image/jpeg,image/png,image/webp" (change)="onImagenChange($event)" [disabled]="isUploadingImagen" />
+          @if (isUploadingImagen) { <small class="cf__uploading">Subiendo imagen…</small> }
+        </div>
+      }
+
+      <label class="cf__toggle">
+        <input type="checkbox" [(ngModel)]="form.imagenPromoActiva" name="imagenPromoActiva" />
+        <span>Mostrar imagen en modal de inicio</span>
+        <small>Activa el PromoModal dinámico en el storefront con esta imagen</small>
+      </label>
+    </fieldset>
+
+    <fieldset class="cf__section">
+      <legend class="cf__legend">Bases del concurso</legend>
+      <div class="form-field">
+        <label>Texto de las bases *</label>
+        <textarea [(ngModel)]="form.reglas" name="reglas" required rows="10" placeholder="Escribe las bases del concurso. Cada párrafo en una línea separada."></textarea>
+        <small class="cf__hint">Se mostrará en la página pública /concursos/:id/reglas</small>
+      </div>
+    </fieldset>
+
+    <fieldset class="cf__section">
+      <legend class="cf__legend">Términos legales</legend>
+      <div class="form-field">
+        <label>Texto legal *</label>
+        <textarea [(ngModel)]="form.legal" name="legal" required rows="10" placeholder="Escribe los términos legales del concurso."></textarea>
+        <small class="cf__hint">Se mostrará en la página pública /concursos/:id/legales</small>
+      </div>
+    </fieldset>
+
+    @if (errorMessage) { <p class="error-msg">{{ errorMessage }}</p> }
+
+    <div class="cf__footer">
+      <button type="button" class="btn-secondary" (click)="goBack()">Cancelar</button>
+      <button type="submit" class="btn-primary" [disabled]="f.invalid || isSaving || isUploadingImagen">
+        {{ isSaving ? 'Guardando…' : (isEdit ? 'Guardar cambios' : 'Crear concurso') }}
+      </button>
+    </div>
+
+  </form>
+  }
+</div>

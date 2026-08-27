@@ -1,0 +1,55 @@
+<div class="cl">
+  <div class="cl__header">
+    <h2>Concursos</h2>
+    <button class="btn-primary" (click)="goToNuevo()">+ Nuevo concurso</button>
+  </div>
+
+  @if (loadError) { <p class="error-msg">{{ loadError }}</p> }
+  @if (actionError) { <p class="error-msg">{{ actionError }}</p> }
+
+  @if (concursos.length === 0 && !loadError) {
+    <p class="cl__empty">No hay concursos todavía. Crea el primero.</p>
+  } @else {
+    <table class="cl__table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Estado</th>
+          <th>Desde</th>
+          <th>Hasta</th>
+          <th>Monto mín.</th>
+          <th>Participantes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of concursos; track c.id) {
+          <tr>
+            <td class="cl__titulo">{{ c.titulo }}</td>
+            <td><span class="badge badge--{{ c.estado | lowercase }}">{{ c.estado }}</span></td>
+            <td>{{ c.fechaDesde | date:'dd/MM/yy' }}</td>
+            <td>{{ c.fechaHasta ? (c.fechaHasta | date:'dd/MM/yy') : '—' }}</td>
+            <td>{{ formatCLP(c.montoMinimo) }}</td>
+            <td class="cl__count">{{ c.participantesCount ?? '—' }}</td>
+            <td class="cl__actions">
+              <button class="btn-sm" (click)="goToDetalle(c.id)">Ver</button>
+              @if (c.estado !== 'FINISHED') {
+                <button class="btn-sm" (click)="goToEditar(c.id)">Editar</button>
+              }
+              @if (c.estado === 'DRAFT') {
+                <button class="btn-sm btn-sm--success" (click)="activar(c)" [disabled]="loadingId === c.id">
+                  {{ loadingId === c.id ? '…' : 'Activar' }}
+                </button>
+              }
+              @if (c.estado === 'ACTIVE') {
+                <button class="btn-sm btn-sm--danger" (click)="finalizar(c)" [disabled]="loadingId === c.id">
+                  {{ loadingId === c.id ? '…' : 'Finalizar' }}
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

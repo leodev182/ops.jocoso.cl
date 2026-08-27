@@ -1,0 +1,91 @@
+.cl {
+  padding: 2rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+
+    h2 { font-size: 1.5rem; font-weight: 600; }
+  }
+
+  &__empty { color: #6b7280; font-size: .875rem; margin-top: 1rem; }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .875rem;
+
+    th {
+      text-align: left;
+      padding: .625rem .875rem;
+      background: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    td {
+      padding: .75rem .875rem;
+      border-bottom: 1px solid #f3f4f6;
+      color: #111827;
+      vertical-align: middle;
+    }
+
+    tr:hover td { background: #fafafa; }
+  }
+
+  &__titulo { font-weight: 500; max-width: 220px; }
+  &__count { text-align: center; font-weight: 600; color: #4338ca; }
+
+  &__actions {
+    display: flex;
+    gap: .375rem;
+    white-space: nowrap;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: .2rem .6rem;
+  border-radius: 999px;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+
+  &--draft    { background: #f3f4f6; color: #6b7280; }
+  &--active   { background: #d1fae5; color: #065f46; }
+  &--finished { background: #e0e7ff; color: #3730a3; }
+}
+
+.btn-primary {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: .625rem 1.25rem;
+  font-size: .875rem;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover { background: #4f46e5; }
+}
+
+.btn-sm {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  padding: .3rem .75rem;
+  font-size: .8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .1s;
+  &:hover:not(:disabled) { background: #f3f4f6; }
+  &:disabled { opacity: .5; cursor: not-allowed; }
+
+  &--success { border-color: #6ee7b7; color: #065f46; &:hover:not(:disabled) { background: #d1fae5; } }
+  &--danger  { border-color: #fca5a5; color: #991b1b; &:hover:not(:disabled) { background: #fee2e2; } }
+}
+
+.error-msg { color: #dc2626; font-size: .875rem; margin-bottom: 1rem; }
