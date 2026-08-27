@@ -1,4 +1,5 @@
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'COMPLETED' | 'CANCELLED';
+export type OrderOrigin = 'WEB' | 'ML' | 'CARD' | 'TRANSFER' | 'CASH';
 
 export interface OrderItem {
   id: string;
@@ -22,6 +23,7 @@ export interface Order {
   user?: OrderUser | null;
   addressId: string | null;
   status: OrderStatus;
+  origin: OrderOrigin;
   totalAmount: string;
   trackingCode: string | null;
   shippingLabel: string | null;

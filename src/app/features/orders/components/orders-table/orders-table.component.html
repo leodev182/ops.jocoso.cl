@@ -4,6 +4,7 @@
       <th>ID</th>
       <th>Usuario</th>
       <th>Estado</th>
+      <th>Origen</th>
       <th>Total</th>
       <th>Fecha</th>
       <th></th>
@@ -15,6 +16,7 @@
         <td><code>{{ order.id | slice:0:8 }}…</code></td>
         <td>{{ order.user?.name || order.user?.email || (order.userId | slice:0:8) + '…' }}</td>
         <td><span class="badge badge--{{ order.status | lowercase }}">{{ order.status | lowercase }}</span></td>
+        <td><span class="badge badge--origin-{{ order.origin | lowercase }}">{{ order.origin }}</span></td>
         <td>$ {{ order.totalAmount }}</td>
         <td>{{ order.createdAt | date:'dd/MM/yy' }}</td>
         <td class="orders-table__action">
