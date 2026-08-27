@@ -14,6 +14,8 @@ export interface Concurso {
   resultadoVisible: boolean;
   ganadorOrdenId: string | null;
   permiteMultiplesParticipaciones: boolean;
+  minimoTickets: number;
+  ganadorFallbackNombre: string | null;
   creadoEn: string;
   participantesCount?: number;
 }
@@ -40,4 +42,5 @@ export interface CreateConcursoRequest {
   imagenPromoUrl?: string;
   imagenPromoActiva: boolean;
   permiteMultiplesParticipaciones: boolean;
+  minimoTickets: number;
 }

@@ -37,6 +37,7 @@
   &__info-label { font-size: .75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .04em; }
   &__info-value { font-size: .9375rem; font-weight: 500; color: #111827; }
   &__info-value--highlight { color: #4338ca; font-size: 1.125rem; font-weight: 700; }
+  &__info-value--warn { color: #dc2626; font-weight: 700; }
 
   &__actions {
     display: flex;
@@ -57,7 +58,42 @@
     margin-bottom: 1.5rem;
   }
 
+  &__winner--fallback {
+    background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+    border-color: #a78bfa;
+  }
+
   &__winner-icon { font-size: 2rem; }
+
+  &__fallback {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: .625rem;
+  }
+
+  &__fallback-warning { font-size: .875rem; font-weight: 600; color: #92400e; }
+  &__fallback-desc { font-size: .8125rem; color: #78350f; }
+
+  &__fallback-row {
+    display: flex;
+    gap: .625rem;
+    align-items: center;
+  }
+
+  &__fallback-input {
+    flex: 1;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: .5rem .75rem;
+    font-size: .875rem;
+    outline: none;
+    &:focus { border-color: #7c3aed; }
+  }
 
   &__winner-info { display: flex; flex-direction: column; gap: .125rem; }
   &__winner-label { font-size: .75rem; font-weight: 600; color: #92400e; text-transform: uppercase; letter-spacing: .04em; }

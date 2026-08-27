@@ -10,7 +10,20 @@
   </div>
 
   @if (loadError) { <p class="error-msg">{{ loadError }}</p> }
-  @if (actionError) { <p class="error-msg">{{ actionError }}</p> }
+  @if (actionError && !showFallbackInput) { <p class="error-msg">{{ actionError }}</p> }
+
+  @if (showFallbackInput) {
+    <div class="cd__fallback">
+      <p class="cd__fallback-warning">⚠️ {{ actionError }}</p>
+      <p class="cd__fallback-desc">Ingresa el nombre del ganador alternativo para mostrar en el storefront:</p>
+      <div class="cd__fallback-row">
+        <input type="text" class="cd__fallback-input" [(ngModel)]="fallbackNombre" placeholder="Ej: Pedro González" (keyup.enter)="onDrawFallback()" />
+        <button class="btn-ruleta" (click)="onDrawFallback()" [disabled]="!fallbackNombre.trim() || isDrawing">
+          {{ isDrawing ? 'Guardando…' : 'Confirmar ganador alternativo' }}
+        </button>
+      </div>
+    </div>
+  }
 
   @if (concurso) {
 
@@ -36,6 +49,12 @@
         <span class="cd__info-label">Múltiples tickets</span>
         <span class="cd__info-value">{{ concurso.permiteMultiplesParticipaciones ? 'Sí' : 'No' }}</span>
       </div>
+      <div class="cd__info-item">
+        <span class="cd__info-label">Mínimo de tickets</span>
+        <span class="cd__info-value" [class.cd__info-value--warn]="participantes.length < concurso.minimoTickets">
+          {{ participantes.length }} / {{ concurso.minimoTickets }}
+        </span>
+      </div>
     </div>
 
     <!-- ── Acciones ────────────────────────────────────────────────────── -->
@@ -56,14 +75,20 @@
     </div>
 
     <!-- ── Ganador ─────────────────────────────────────────────────────── -->
-    @if (concurso.ganadorOrdenId && concurso.resultadoVisible) {
-      <div class="cd__winner">
-        <div class="cd__winner-icon">🏆</div>
+    @if (concurso.resultadoVisible && (concurso.ganadorOrdenId || concurso.ganadorFallbackNombre)) {
+      <div class="cd__winner" [class.cd__winner--fallback]="concurso.ganadorFallbackNombre">
+        <div class="cd__winner-icon">{{ concurso.ganadorFallbackNombre ? '🎭' : '🏆' }}</div>
         <div class="cd__winner-info">
-          <p class="cd__winner-label">Ganador del concurso</p>
-          <p class="cd__winner-name">{{ ganadorParticipante?.clienteNombre ?? '—' }}</p>
-          <p class="cd__winner-email">{{ ganadorParticipante?.clienteEmail ?? '—' }}</p>
-          <p class="cd__winner-orden">Orden: {{ concurso.ganadorOrdenId.slice(0, 8).toUpperCase() }} · {{ ganadorParticipante?.ordenTotal ? formatCLP(ganadorParticipante!.ordenTotal!) : '' }}</p>
+          <p class="cd__winner-label">
+            {{ concurso.ganadorFallbackNombre ? 'Ganador alternativo (mínimo de tickets no alcanzado)' : 'Ganador del concurso' }}
+          </p>
+          <p class="cd__winner-name">
+            {{ concurso.ganadorFallbackNombre ?? ganadorParticipante?.clienteNombre ?? '—' }}
+          </p>
+          @if (!concurso.ganadorFallbackNombre) {
+            <p class="cd__winner-email">{{ ganadorParticipante?.clienteEmail ?? '—' }}</p>
+            <p class="cd__winner-orden">Orden: {{ concurso.ganadorOrdenId!.slice(0, 8).toUpperCase() }} · {{ ganadorParticipante?.ordenTotal ? formatCLP(ganadorParticipante!.ordenTotal!) : '' }}</p>
+          }
         </div>
       </div>
     }

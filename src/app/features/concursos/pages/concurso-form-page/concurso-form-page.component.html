@@ -22,6 +22,11 @@
           <label>Monto mínimo de compra (CLP) *</label>
           <input type="number" [(ngModel)]="form.montoMinimo" name="montoMinimo" required min="1" placeholder="Ej: 50000" />
         </div>
+        <div class="form-field">
+          <label>Mínimo de tickets para ejecutar ruleta *</label>
+          <input type="number" [(ngModel)]="form.minimoTickets" name="minimoTickets" required min="1" placeholder="Ej: 10" />
+          <small class="cf__hint">Si no se alcanza este número, deberás ingresar un ganador alternativo</small>
+        </div>
       </div>
 
       <div class="cf__row">

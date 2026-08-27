@@ -26,6 +26,7 @@ export class ConcursoFormPageComponent implements OnInit {
   form = {
     titulo: '',
     montoMinimo: null as number | null,
+    minimoTickets: 1,
     fechaDesde: '',
     fechaHasta: '',
     reglas: '',
@@ -68,6 +69,7 @@ export class ConcursoFormPageComponent implements OnInit {
         this.form.imagenPromoUrl = c.imagenPromoUrl ?? '';
         this.form.imagenPromoActiva = c.imagenPromoActiva;
         this.form.permiteMultiplesParticipaciones = c.permiteMultiplesParticipaciones;
+        this.form.minimoTickets = c.minimoTickets;
       }
       this.isLoading = false;
     });
@@ -107,6 +109,7 @@ export class ConcursoFormPageComponent implements OnInit {
       imagenPromoUrl: this.form.imagenPromoUrl || undefined,
       imagenPromoActiva: this.form.imagenPromoActiva,
       permiteMultiplesParticipaciones: this.form.permiteMultiplesParticipaciones,
+      minimoTickets: this.form.minimoTickets,
     };
 
     const op: Observable<unknown> = this.isEdit && this.editId

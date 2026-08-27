@@ -33,8 +33,8 @@ export class ConcursosService {
     return this.api.patch<void>(`/concursos/${id}/estado`, { estado });
   }
 
-  draw(id: string): Observable<{ ganadorOrdenId: string }> {
-    return this.api.post<{ ganadorOrdenId: string }>(`/concursos/${id}/draw`, {});
+  draw(id: string, fallbackNombre?: string): Observable<{ ganadorOrdenId: string | null; ganadorFallbackNombre: string | null; esFallback: boolean }> {
+    return this.api.post(`/concursos/${id}/draw`, fallbackNombre ? { fallbackNombre } : {});
   }
 
   getParticipantes(id: string): Observable<Participante[]> {
